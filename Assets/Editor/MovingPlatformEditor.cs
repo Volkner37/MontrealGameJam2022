@@ -19,14 +19,14 @@ public class MovingPlatformEditor : Editor
             "the selected waypoint",
             MessageType.Info);
 
-        for (int b = 0; b < script.waypoints.Length; ++b) {
+        for (int b = 0; b < script.GetWaypointsLength(); ++b) {
             if (GUILayout.Button("Set Waypoint " + b.ToString()))
             {
                 script.SetWaypoint(b);
             }
         }
 
-        for (int b = 0; b < script.waypoints.Length; ++b) {
+        for (int b = 0; b < script.GetWaypointsLength(); ++b) {
             if (GUILayout.Button("Snap to Waypoint " + b.ToString()))
             {
                 script.SnapToWaypoint(b);

@@ -4,21 +4,25 @@ using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
 {
-    public float pointToPointDuration = 4.0f;
-    public float pauseDuration = 1.0f; 
-    public AnimationCurve movementCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
+    [SerializeField]
+    private float pointToPointDuration = 4.0f;
+    [SerializeField]
+    private float pauseDuration = 1.0f;
+    [SerializeField]
+    private AnimationCurve movementCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
 
-    public Vector3[] waypoints = new Vector3[2];
+    [SerializeField]
+    private Vector3[] waypoints = new Vector3[2];
 
-    int sourceWaypoint;
-    int destWaypoint;
-    float currentDuration;
+    private int sourceWaypoint;
+    private int destWaypoint;
+    private float currentDuration;
 
-    enum PlatformState {
+    private enum PlatformState {
         Moving,
         Paused,
     };
-    PlatformState currentState;
+    private PlatformState currentState;
 
     // Start is called before the first frame update
     void Start()
@@ -86,6 +90,11 @@ public class MovingPlatform : MonoBehaviour
         Gizmos.DrawLine(waypoints[0], waypoints[1]);
         Gizmos.DrawSphere(waypoints[0], 0.5f);
         Gizmos.DrawSphere(waypoints[1], 0.5f);
+    }
+
+    public int GetWaypointsLength()
+    {
+        return waypoints.Length;
     }
 
     public void SetWaypoint(int waypoint)
