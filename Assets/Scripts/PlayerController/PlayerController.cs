@@ -15,7 +15,6 @@ public class PlayerController : MonoBehaviour
 
     [Space]
     [Header("Global Values")] 
-    [SerializeField] public float gravity = 9.8f;
     [SerializeField] private float maxSpeed = 1;
     [SerializeField] private float forceJump;
 
@@ -46,8 +45,8 @@ public class PlayerController : MonoBehaviour
     
     #region Inputs
 
-    private float _VecticalAxis;
-    private float _HorizontalAxis;
+    private float _verticalAxis;
+    private float _horizontalAxis;
     private bool _isJumping;
 
 
@@ -68,13 +67,22 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateInputs()
     {
-        _VecticalAxis = Input.GetAxis("Vertical");
-        _HorizontalAxis = Input.GetAxis("Horizontal");
+        _verticalAxis = Input.GetAxis("Vertical");
+        _horizontalAxis = Input.GetAxis("Horizontal");
         _isTryingToAttract = Input.GetMouseButton(0);
         _isTryingToRepel = Input.GetMouseButton(1);
         
         if(!_isJumping)
             _isJumping = Input.GetKeyDown(KeyCode.Space);
+        
+        if (Input.GetMouseButtonUp(0))
+        {
+            _repelLocked = false;
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            _attractLocked = false;
+        }
     }
     
     void FixedUpdate()
@@ -98,15 +106,6 @@ public class PlayerController : MonoBehaviour
             UpdateMagnetGunEffect();
         }
 
-        if (Input.GetMouseButtonUp(0)) // Pulling button UP
-        {
-            _repelLocked = false;
-        }
-        if (Input.GetMouseButtonUp(1)) // Pushing button UP
-        {
-            _attractLocked = false;
-        }
-
         _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, maxSpeed);
         
         if(debugMode)
@@ -123,25 +122,25 @@ public class PlayerController : MonoBehaviour
     private void UpdateInputDirection()
     {
         //Accelerations
-        _VecticalAxis = Input.GetAxis("Vertical");
-        if (_VecticalAxis >= 0)
-            _VecticalAxis *= forwardAcceleration;
-        else if (_VecticalAxis <= 0)
-            _VecticalAxis *= backwardAcceleration;
+        _verticalAxis = Input.GetAxis("Vertical");
+        if (_verticalAxis >= 0)
+            _verticalAxis *= forwardAcceleration;
+        else if (_verticalAxis <= 0)
+            _verticalAxis *= backwardAcceleration;
         
-        _HorizontalAxis *= sideAcceleration;
+        _horizontalAxis *= sideAcceleration;
 
         //For diagonal speeds
         float maxDiagonalSpeed = Mathf.Max(forwardAcceleration, backwardAcceleration, sideAcceleration);
         
         if (!_isGrounded)
         {
-            _VecticalAxis *= airControlRatio;
-            _HorizontalAxis *= airControlRatio;
+            _verticalAxis *= airControlRatio;
+            _horizontalAxis *= airControlRatio;
             maxDiagonalSpeed *= airControlRatio;
         }
         
-        _inputDirection = Vector3.ClampMagnitude((new Vector3(_camera.transform.right.x,0, _camera.transform.right.z)) * _HorizontalAxis + (new Vector3(_camera.transform.forward.x,0, _camera.transform.forward.z)) * _VecticalAxis, maxDiagonalSpeed);
+        _inputDirection = Vector3.ClampMagnitude((new Vector3(_camera.transform.right.x,0, _camera.transform.right.z)) * _horizontalAxis + (new Vector3(_camera.transform.forward.x,0, _camera.transform.forward.z)) * _verticalAxis, maxDiagonalSpeed);
     }
 
     private void CheckJumpInput()

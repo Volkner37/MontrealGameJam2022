@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class MouseHandler : MonoBehaviour
 {
-    [SerializeField] 
+    [SerializeField]
+    [Range(0.5f, 10.0f)]
     private float horizontalSpeed;
     [SerializeField] 
+    [Range(0.5f, 10.0f)]
     private float verticalSpeed;
     
-    private float xRotation = 0.0f;
-    private float yRotation = 0.0f;
+    private float _xRotation = 0.0f;
+    private float _yRotation = 0.0f;
     private Camera _camera;
 
     // Start is called before the first frame update
@@ -25,10 +27,10 @@ public class MouseHandler : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * horizontalSpeed;
         float mouseY = Input.GetAxis("Mouse Y") * verticalSpeed;
 
-        yRotation += mouseX;
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90, 90);
+        _yRotation += mouseX;
+        _xRotation -= mouseY;
+        _xRotation = Mathf.Clamp(_xRotation, -90, 90);
 
-        _camera.transform.eulerAngles = new Vector3(xRotation, yRotation, 0.0f);
+        _camera.transform.eulerAngles = new Vector3(_xRotation, _yRotation, 0.0f);
     }
 }
