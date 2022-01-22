@@ -33,7 +33,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_ba710086133a4c06b63e6ddfc00e5fc1:
-        m_Texture: {fileID: 2800000, guid: e17eec91ec14e304f9b17a6a98fb3624, type: 3}
+        m_Texture: {fileID: 2800000, guid: 236d918a638c55446aceabafbdc0ca18, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
