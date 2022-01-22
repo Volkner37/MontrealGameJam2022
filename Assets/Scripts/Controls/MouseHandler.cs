@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MouseHandler : MonoBehaviour
@@ -10,7 +8,7 @@ public class MouseHandler : MonoBehaviour
     [SerializeField] 
     [Range(0.5f, 10.0f)]
     private float verticalSpeed;
-    
+
     private float _xRotation = 0.0f;
     private float _yRotation = 0.0f;
     private Camera _camera;

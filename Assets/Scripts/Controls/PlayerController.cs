@@ -1,7 +1,4 @@
-using Microsoft.VisualBasic;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -24,8 +21,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float forceMagnet;
     [SerializeField] private float forceMagnetObject;
     [SerializeField] private AnimationCurve staticAcceleration;
-    [SerializeField] private bool debugMode = true;
 
+    [Space] [Header("Debug")] 
+    [SerializeField] private bool enableDebugRay = false;
+    [SerializeField] private bool enableDebugGun = false;
+    [SerializeField] private bool enableSticky = false;
     
     private Camera _camera;
     private Rigidbody _rigidbody;
@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 _inputDirection;
     private bool _isGrounded = false;
 
-    #region GunLogics  
+    #region Attract/Retract
     private bool _isTryingToRepel = false;
     private bool _isTryingToAttract = false;
     private bool _repelLocked = false; 
@@ -41,14 +41,19 @@ public class PlayerController : MonoBehaviour
     private bool IsAttracting => _isTryingToAttract && !_attractLocked;
     private bool IsRepelling => _isTryingToRepel && !_repelLocked;
     private bool IsUsingGun => IsRepelling || IsAttracting;
+    public Vector3 TargetPosition { get; private set; }
+
     #endregion
     
+    #region WallStick
+    private bool _isSticked = false;
+    #endregion
+
     #region Inputs
 
     private float _verticalAxis;
     private float _horizontalAxis;
     private bool _isJumping;
-
 
     #endregion
 
@@ -71,10 +76,19 @@ public class PlayerController : MonoBehaviour
         _horizontalAxis = Input.GetAxis("Horizontal");
         _isTryingToAttract = Input.GetMouseButton(0);
         _isTryingToRepel = Input.GetMouseButton(1);
-        
+    
+        if (Input.GetMouseButtonUp(0))
+        {
+            _repelLocked = false;
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            _attractLocked = false;
+        }
+    
         if(!_isJumping)
             _isJumping = Input.GetKeyDown(KeyCode.Space);
-        
+    
         if (Input.GetMouseButtonUp(0))
         {
             _repelLocked = false;
@@ -84,18 +98,23 @@ public class PlayerController : MonoBehaviour
             _attractLocked = false;
         }
     }
-    
+
     void FixedUpdate()
     {
         UpdateGrounded();
 
+        UpdateStickStatus();
+        
         if(!IsUsingGun)
         {
-            _physicsMaterial.dynamicFriction = 2;
+            TargetPosition = Vector3.zero;
+            _isSticked = false;
             
+            _physicsMaterial.dynamicFriction = 2;
+        
             UpdateInputDirection();
             CheckJumpInput();
-            
+        
             _rigidbody.AddForce(_inputDirection * Time.deltaTime, ForceMode.Impulse);
         }
         else
@@ -105,11 +124,10 @@ public class PlayerController : MonoBehaviour
             _attractLocked = IsRepelling;
             UpdateMagnetGunEffect();
         }
-
+    
         _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, maxSpeed);
-        
-        if(debugMode)
-            ShowDebug();
+    
+        ShowDebug();
     }
 
     private void UpdateGrounded()   
@@ -117,6 +135,14 @@ public class PlayerController : MonoBehaviour
         RaycastHit hitGround;
         int layerMask = ~LayerMask.GetMask("Player");
         _isGrounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out hitGround, 1.5f, layerMask);
+    }
+
+    private void UpdateStickStatus()
+    {
+        if (_isSticked)
+            _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        else
+            _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
     private void UpdateInputDirection()
@@ -127,19 +153,19 @@ public class PlayerController : MonoBehaviour
             _verticalAxis *= forwardAcceleration;
         else if (_verticalAxis <= 0)
             _verticalAxis *= backwardAcceleration;
-        
+    
         _horizontalAxis *= sideAcceleration;
 
         //For diagonal speeds
         float maxDiagonalSpeed = Mathf.Max(forwardAcceleration, backwardAcceleration, sideAcceleration);
-        
+    
         if (!_isGrounded)
         {
             _verticalAxis *= airControlRatio;
             _horizontalAxis *= airControlRatio;
             maxDiagonalSpeed *= airControlRatio;
         }
-        
+    
         _inputDirection = Vector3.ClampMagnitude((new Vector3(_camera.transform.right.x,0, _camera.transform.right.z)) * _horizontalAxis + (new Vector3(_camera.transform.forward.x,0, _camera.transform.forward.z)) * _verticalAxis, maxDiagonalSpeed);
     }
 
@@ -152,49 +178,76 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    
-
     private void ShowDebug()
     {
         #region DebugRays
 
-        var position = transform.position;
-        Debug.DrawRay(position,  _inputDirection * 2.0f, Color.green);
-        Debug.DrawRay(position,  _rigidbody.velocity * 2.0f, Color.blue);
-        Debug.DrawRay(_camera.transform.position, _camera.transform.forward * 3f, Color.yellow);
+        if (enableDebugRay)
+        {
+            var position = transform.position;
+            Debug.DrawRay(position,  _inputDirection * 2.0f, Color.green);
+            Debug.DrawRay(position,  _rigidbody.velocity * 2.0f, Color.blue);
+            Debug.DrawRay(_camera.transform.position, _camera.transform.forward * 3f, Color.yellow);
+        }
+        #endregion
+    
+        #region Gun
+
+        if (enableDebugGun)
+        {
+            if(IsAttracting)
+                Debug.Log("Attracting");
+            if(IsRepelling)
+                Debug.Log("Repelling");
+        }
         #endregion
         
-        #region Gun
-        if(IsAttracting)
-            Debug.Log("Attracting");
-        if(IsRepelling)
-            Debug.Log("Repelling");
+        #region Stick
+        if(enableSticky)
+        {
+            if(_isSticked)
+                Debug.Log("IsSticked");
+            if(!_isSticked)
+                Debug.Log("IsFree");
+        }
         #endregion
 
     }
 
     void UpdateMagnetGunEffect()
     {
-        RaycastHit hit;
         //Without this, the player could block the raycast.
         int layerMask = ~LayerMask.GetMask("Player");
 
-        if (Physics.Raycast(_camera.transform.position, _camera.transform.forward, out hit, maxRange, layerMask))
-        { 
-            GameObject objectHit = hit.transform.gameObject;
+        RaycastHit hit;
 
-            Magnetic magneticComponent = objectHit.GetComponent<Magnetic>();
-            if(magneticComponent is {IsStatic: true})
+        if (Physics.Raycast(_camera.transform.position, _camera.transform.forward, out hit, maxRange,
+            layerMask))
+        {
+            Magnetic target;
+            if (hit.transform.TryGetComponent(out target))
             {
-                float acceleration = staticAcceleration.Evaluate((hit.distance)/maxRange);
-                _rigidbody.AddForce((IsAttracting? _camera.transform.forward : -_camera.transform.forward) * (acceleration * forceMagnet * Time.deltaTime) , ForceMode.Force);
+                if (target is {IsStatic: true})
+                {
+                    float acceleration = staticAcceleration.Evaluate((hit.distance) / maxRange);
+                    _rigidbody.AddForce(
+                        (IsAttracting ? _camera.transform.forward : -_camera.transform.forward) *
+                        (acceleration * forceMagnet * Time.deltaTime), ForceMode.Force);
+                }
+            }
+            else
+            {
+                _repelLocked = false;
+                _attractLocked = false;
             }
         }
-        else
-        {
-            _repelLocked = false;
-            _attractLocked = false;
-        }
+    
+        TargetPosition = hit.point;
+    }
 
+    private void OnCollisionStay(Collision other)
+    {
+        if(other.gameObject.GetComponent<Magnetic>())
+            _isSticked = IsAttracting;
     }
 }
