@@ -1,36 +1,50 @@
 using System;
+using System.Collections;
+using System.Drawing;
+using System.Numerics;
+using TMPro;
 using UnityEngine;
+using Color = UnityEngine.Color;
+using Vector3 = UnityEngine.Vector3;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    [Space]
+    [Header("Global Settings")] 
+    [SerializeField] private float maxSpeed = 1;
+    [SerializeField] private float gravity = 9.8f;
+    
     [Header("Walking Settings")]
     [SerializeField] private float forwardAcceleration = 1;
     [SerializeField] private float backwardAcceleration = 1;
     [SerializeField] private float sideAcceleration = 1;
     [SerializeField] private float airControlRatio = 0.3f;
 
+    [Space] 
+    [Header("Jump Settings")]
+    [SerializeField] private bool allowJumping = true;
+    [SerializeField] private float forceJump = 200;
+    
     [Space]
-    [Header("Global Values")] 
-    [SerializeField] private float maxSpeed = 1;
-    [SerializeField] private float forceJump;
-
-    [Space]
-    [Header("Gun settings")] 
+    [Header("Gun Settings")] 
     [SerializeField] private float maxRange;
     [SerializeField] private float forceMagnet;
-    [SerializeField] private float forceMagnetObject;
     [SerializeField] private AnimationCurve staticAcceleration;
+    [SerializeField] private float _magnetVelocityDecay;
 
-    [Space] [Header("Debug")] 
+    [Space] [Header("Debug Options")] 
+    [SerializeField] private TextMeshProUGUI debugTextOutput;
     [SerializeField] private bool enableDebugRay = false;
     [SerializeField] private bool enableDebugGun = false;
-    [SerializeField] private bool enableSticky = false;
+    [SerializeField] private bool enableDebugSticky = false;
+    [SerializeField] private bool enableDebugJump = false;
     
     private Camera _camera;
     private Rigidbody _rigidbody;
     private PhysicMaterial _physicsMaterial;
-    private Vector3 _inputDirection;
+    private Vector3 _velocity;
+    private Vector3 _magnetVelocity;
     private bool _isGrounded = false;
 
     #region Attract/Retract
@@ -38,11 +52,14 @@ public class PlayerController : MonoBehaviour
     private bool _isTryingToAttract = false;
     private bool _repelLocked = false; 
     private bool _attractLocked = false;
-    private bool IsAttracting => _isTryingToAttract && !_attractLocked;
-    private bool IsRepelling => _isTryingToRepel && !_repelLocked;
-    private bool IsUsingGun => IsRepelling || IsAttracting;
-    public Vector3 TargetPosition { get; private set; }
 
+    private Magnetic currentTarget;
+    private float currentTargetDistance;
+    private bool _isLookingAtMagneticObject => currentTarget != null;
+    private bool IsAttracting => _isTryingToAttract && !_attractLocked && _isLookingAtMagneticObject;
+    private bool IsRepelling => _isTryingToRepel && !_repelLocked && _isLookingAtMagneticObject;
+    private bool IsUsingGun => (IsRepelling || IsAttracting);
+    public Vector3 TargetPosition { get; private set; }
     #endregion
     
     #region WallStick
@@ -50,11 +67,11 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Inputs
-
     private float _verticalAxis;
     private float _horizontalAxis;
     private bool _isJumping;
-
+    private bool _canJump;
+    private float currentJumpSpeed;
     #endregion
 
     // Start is called before the first frame update
@@ -68,6 +85,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         UpdateInputs();
+        CheckForMagneticObject();
     }
 
     private void UpdateInputs()
@@ -85,49 +103,91 @@ public class PlayerController : MonoBehaviour
         {
             _attractLocked = false;
         }
-    
-        if(!_isJumping)
+        if (allowJumping && !_isJumping && _isGrounded)
+        {
+            currentJumpSpeed = forceJump;
             _isJumping = Input.GetKeyDown(KeyCode.Space);
-    
-        if (Input.GetMouseButtonUp(0))
-        {
-            _repelLocked = false;
         }
-        if (Input.GetMouseButtonUp(1))
+    }
+
+    void CheckForMagneticObject()
+    {
+        //Without this, the player could block the raycast.
+        int layerMask = ~LayerMask.GetMask("Player");
+        RaycastHit hit;
+        if (Physics.Raycast(_camera.transform.position, _camera.transform.forward, out hit, maxRange, layerMask))
         {
-            _attractLocked = false;
+            if (hit.transform.TryGetComponent(out currentTarget))
+            {
+                TargetPosition = hit.point;
+                currentTargetDistance = hit.distance;
+                return;
+            }
         }
+        
+        currentTarget = null;
+        currentTargetDistance = 0;
+        TargetPosition = Vector3.zero;
     }
 
     void FixedUpdate()
     {
         UpdateGrounded();
-
         UpdateStickStatus();
         
         if(!IsUsingGun)
         {
+            //Resetting some values
+            _velocity = Vector3.zero;
             TargetPosition = Vector3.zero;
             _isSticked = false;
+
+            CalculateVelocityDecay();
             
-            _physicsMaterial.dynamicFriction = 2;
+            //Apply jumping forces to velocity
+            if(allowJumping)
+                CheckJumpInput();
         
             UpdateInputDirection();
-            CheckJumpInput();
-        
-            _rigidbody.AddForce(_inputDirection * Time.deltaTime, ForceMode.Impulse);
+
+            if(!_isJumping)
+                ApplyGravity();
+            
+            _rigidbody.velocity = _velocity + _magnetVelocity;
+
+            //We apply our calculated velocity
         }
         else
         {
-            _physicsMaterial.dynamicFriction = 0;
             _repelLocked = IsAttracting;
             _attractLocked = IsRepelling;
             UpdateMagnetGunEffect();
+            _magnetVelocity = _rigidbody.velocity;
         }
     
+        //Limits the max speed of the overall velocity
         _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, maxSpeed);
-    
+        
         ShowDebug();
+    }
+
+    private void CalculateVelocityDecay()
+    {
+        //Decay
+        if (_magnetVelocity.magnitude - (_magnetVelocity.normalized * _magnetVelocityDecay).magnitude < 0)
+        {
+            _magnetVelocity = Vector3.zero;
+        }
+        else
+            _magnetVelocity -= _magnetVelocity.normalized * (_magnetVelocityDecay * Time.deltaTime);
+    }
+
+
+    private void ApplyGravity()
+    {
+        _velocity.y = _rigidbody.velocity.y;
+        _velocity.y -= gravity * Time.deltaTime;
+        //_magnetVelocity.y -= gravity * Time.deltaTime;
     }
 
     private void UpdateGrounded()   
@@ -139,6 +199,7 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateStickStatus()
     {
+        //todo : use velocity instead?
         if (_isSticked)
             _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
         else
@@ -148,7 +209,6 @@ public class PlayerController : MonoBehaviour
     private void UpdateInputDirection()
     {
         //Accelerations
-        _verticalAxis = Input.GetAxis("Vertical");
         if (_verticalAxis >= 0)
             _verticalAxis *= forwardAcceleration;
         else if (_verticalAxis <= 0)
@@ -156,25 +216,52 @@ public class PlayerController : MonoBehaviour
     
         _horizontalAxis *= sideAcceleration;
 
-        //For diagonal speeds
         float maxDiagonalSpeed = Mathf.Max(forwardAcceleration, backwardAcceleration, sideAcceleration);
-    
-        if (!_isGrounded)
+        if (!_isGrounded || _isJumping)
         {
             _verticalAxis *= airControlRatio;
             _horizontalAxis *= airControlRatio;
             maxDiagonalSpeed *= airControlRatio;
         }
-    
-        _inputDirection = Vector3.ClampMagnitude((new Vector3(_camera.transform.right.x,0, _camera.transform.right.z)) * _horizontalAxis + (new Vector3(_camera.transform.forward.x,0, _camera.transform.forward.z)) * _verticalAxis, maxDiagonalSpeed);
+        
+        //This prevents to move faster in diagonal
+        Vector3 result = Vector3.ClampMagnitude((new Vector3(_camera.transform.right.x,0, _camera.transform.right.z)) * _horizontalAxis + (new Vector3(_camera.transform.forward.x,0, _camera.transform.forward.z)) * _verticalAxis, maxDiagonalSpeed);
+
+        _velocity.x = result.x;
+        _velocity.z = result.z;
+
+        //To allow the movement to cancel some magnet velocity
+        float product = Vector3.Dot(_magnetVelocity, result * -1);
+
+        if (product <= 0)
+            return;
+        
+        Vector3 removingForce = _magnetVelocity.normalized * (-1 * product);
+        
+        if (_magnetVelocity.magnitude + removingForce.magnitude < 0)
+        {
+            _magnetVelocity = Vector3.zero;
+        }
+        else
+        {
+            _magnetVelocity += removingForce * Time.deltaTime;
+        }
     }
 
     private void CheckJumpInput()
     {
-        if (_isJumping && _isGrounded)
+        currentJumpSpeed -= gravity * Time.deltaTime;
+        
+        if (_isJumping)
         {
-            _rigidbody.AddForce(Vector3.up * (forceJump * Time.deltaTime), ForceMode.Impulse);
-            _isJumping = false;
+            if (currentJumpSpeed <= 0)
+            {
+                _isJumping = false;
+                currentJumpSpeed = forceJump * Time.deltaTime;
+                return;
+            }
+
+            _velocity.y += currentJumpSpeed;
         }
     }
 
@@ -185,8 +272,9 @@ public class PlayerController : MonoBehaviour
         if (enableDebugRay)
         {
             var position = transform.position;
-            Debug.DrawRay(position,  _inputDirection * 2.0f, Color.green);
+            Debug.DrawRay(position,  _velocity * 2.0f, Color.green);
             Debug.DrawRay(position,  _rigidbody.velocity * 2.0f, Color.blue);
+            Debug.DrawRay(position, _magnetVelocity * 2.0f, Color.red);
             Debug.DrawRay(_camera.transform.position, _camera.transform.forward * 3f, Color.yellow);
         }
         #endregion
@@ -203,7 +291,7 @@ public class PlayerController : MonoBehaviour
         #endregion
         
         #region Stick
-        if(enableSticky)
+        if(enableDebugSticky)
         {
             if(_isSticked)
                 Debug.Log("IsSticked");
@@ -211,43 +299,59 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("IsFree");
         }
         #endregion
+        
+        #region Jump
+        if(enableDebugJump)
+        {
+            if(_isJumping)
+                Debug.Log("Jumping");
+            if(!_isJumping && !_isGrounded)
+                Debug.Log("Falling");
+            if(!_isJumping && _isGrounded)
+                Debug.Log("On ground");
+        }
+        #endregion
 
+        if (debugTextOutput != null)
+        {
+            debugTextOutput.text = $"IsGrounded ={_isGrounded}\n" +
+                                   $"IsJumping ={_isJumping}\n" +
+                                   "\n" +
+                                   $"IsUsingGun ={IsUsingGun}\n" +
+                                   $"IsAttracting = {IsAttracting}\n" +
+                                   $"IsTryingToAttract = {_isTryingToAttract}\n" +
+                                   $"AttractLock{ _attractLocked}\n" +
+                                   $"IsRepelling = {IsRepelling}\n" +
+                                   $"IsTryingToRepel = {_isTryingToRepel}\n" +
+                                   $"RepelLock{ _repelLocked}\n" +
+                                   "\n"+
+                                   $"IsLookingAtObject = {_isLookingAtMagneticObject}\n+" +
+                                   "\n"+
+                                   $"Current Velocity = {_velocity}\n"+
+                                   $"Magnetic Velocity = {_magnetVelocity}";
+        }
     }
 
     void UpdateMagnetGunEffect()
     {
-        //Without this, the player could block the raycast.
-        int layerMask = ~LayerMask.GetMask("Player");
-
-        RaycastHit hit;
-
-        if (Physics.Raycast(_camera.transform.position, _camera.transform.forward, out hit, maxRange,
-            layerMask))
+        if (_isLookingAtMagneticObject)
         {
-            Magnetic target;
-            if (hit.transform.TryGetComponent(out target))
+            if (currentTarget.IsStatic)
             {
-                if (target is {IsStatic: true})
-                {
-                    float acceleration = staticAcceleration.Evaluate((hit.distance) / maxRange);
-                    _rigidbody.AddForce(
-                        (IsAttracting ? _camera.transform.forward : -_camera.transform.forward) *
-                        (acceleration * forceMagnet * Time.deltaTime), ForceMode.Force);
-                }
-            }
-            else
-            {
-                _repelLocked = false;
-                _attractLocked = false;
+                float acceleration = staticAcceleration.Evaluate(currentTargetDistance / maxRange);
+                _rigidbody.AddForce(
+                    (IsAttracting ? _camera.transform.forward : -_camera.transform.forward) *
+                    (acceleration * forceMagnet * Time.deltaTime), ForceMode.Force);
             }
         }
-    
-        TargetPosition = hit.point;
+
+        _repelLocked = false;
+        _attractLocked = false;
     }
 
     private void OnCollisionStay(Collision other)
     {
-        if(other.gameObject.GetComponent<Magnetic>())
+        if(other.gameObject.GetComponent<Magnetic>() == currentTarget)
             _isSticked = IsAttracting;
     }
 }
