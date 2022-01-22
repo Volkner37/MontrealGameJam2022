@@ -232,7 +232,6 @@ GameObject:
   - component: {fileID: 563571676}
   - component: {fileID: 563571677}
   - component: {fileID: 563571678}
-  - component: {fileID: 563571679}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -317,11 +316,11 @@ MonoBehaviour:
   sideAcceleration: 25
   forwardDeceleration: 12
   sideDeceleration: 12
-  gravity: 40
+  gravity: 20
   maxSpeed: 50
-  forceJump: 5
-  maxDistance: 30
-  forceMagnet: 1
+  forceJump: 1000
+  maxRange: 50
+  forceMagnet: 20
   forceMagnetObject: 1
   staticAcceleration:
     serializedVersion: 2
@@ -366,53 +365,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   DebugMode: 1
---- !u!114 &563571679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 563571672}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c16fc664f74518a499e84dbdf061b664, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rigidbody: {fileID: 0}
-  maxDistance: 100
-  force_magnet: 0.2
-  force_magnet_object: 1
-  staticAcceleration:
-    m_Curve:
-    - time: 0
-      value: 1
-      inSlope: -2.0968451
-      outSlope: -2.0968451
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - time: 0.38641262
-      value: 0.18975256
-      inSlope: -0.56987786
-      outSlope: -0.56987786
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.112466335
-    - time: 1.0000465
-      value: 0.000021555199
-      inSlope: -0.3091925
-      outSlope: -0.3091925
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  leftLock: 0
-  rightLock: 0
 --- !u!1 &902879448
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,7 +479,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 766374d8058bc3e4b8117ea50305bd39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <IsStatic>k__BackingField: 0
 --- !u!65 &952312579
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -649,10 +600,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1335863362}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 766374d8058bc3e4b8117ea50305bd39, type: 3}
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <IsStatic>k__BackingField: 0
 --- !u!65 &1335863364
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -758,10 +708,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1831242053}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 766374d8058bc3e4b8117ea50305bd39, type: 3}
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <IsStatic>k__BackingField: 0
 --- !u!65 &1831242055
 BoxCollider:
   m_ObjectHideFlags: 0
