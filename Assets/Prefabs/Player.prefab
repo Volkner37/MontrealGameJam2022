@@ -421,8 +421,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animationSpeed: 2
   defaultLookPosition: {fileID: 3855129547862790312}
-  gunTip: {fileID: 7049008505941093164}
-  test: {fileID: 7367189810993409190, guid: b39351d8dc1bfe54797214bf21d51839, type: 3}
 --- !u!1 &6262332442790893890
 GameObject:
   m_ObjectHideFlags: 0
@@ -1102,10 +1100,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316a8c3f671567e4e9eace9d01a8c5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forwardAcceleration: 15
-  backwardAcceleration: 15
+  forwardAcceleration: 25
+  backwardAcceleration: 20
   sideAcceleration: 15
-  airControlRatio: 0.3
+  airControlRatio: 0.5
   maxSpeed: 50
   forceJump: 200
   maxRange: 100
@@ -1162,6 +1160,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  debugMode: 1
-  Target: {fileID: 0}
-  TargetPosition: {x: 0, y: 0, z: 0}
+  enableDebugRay: 0
+  enableDebugGun: 0
+  enableSticky: 0

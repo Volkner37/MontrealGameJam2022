@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Controls
@@ -22,17 +23,19 @@ namespace Controls
         [SerializeField] private float forceMagnet;
         [SerializeField] private float forceMagnetObject;
         [SerializeField] private AnimationCurve staticAcceleration;
-        [SerializeField] private bool debugMode = true;
 
-    
+        [Space] [Header("Debug")] 
+        [SerializeField] private bool enableDebugRay = false;
+        [SerializeField] private bool enableDebugGun = false;
+        [SerializeField] private bool enableSticky = false;
+        
         private Camera _camera;
         private Rigidbody _rigidbody;
         private PhysicMaterial _physicsMaterial;
         private Vector3 _inputDirection;
         private bool _isGrounded = false;
 
-        #region GunLogics
-
+        #region Attract/Retract
         private bool _isTryingToRepel = false;
         private bool _isTryingToAttract = false;
         private bool _repelLocked = false; 
@@ -40,17 +43,19 @@ namespace Controls
         private bool IsAttracting => _isTryingToAttract && !_attractLocked;
         private bool IsRepelling => _isTryingToRepel && !_repelLocked;
         private bool IsUsingGun => IsRepelling || IsAttracting;
-        public Magnetic Target;
-        public Vector3 TargetPosition;
+        public Vector3 TargetPosition { get; private set; }
 
         #endregion
-    
+        
+        #region WallStick
+        private bool _isSticked = false;
+        #endregion
+
         #region Inputs
 
         private float _verticalAxis;
         private float _horizontalAxis;
         private bool _isJumping;
-
 
         #endregion
 
@@ -100,10 +105,13 @@ namespace Controls
         {
             UpdateGrounded();
 
+            UpdateStickStatus();
+            
             if(!IsUsingGun)
             {
                 TargetPosition = Vector3.zero;
-            
+                _isSticked = false;
+                
                 _physicsMaterial.dynamicFriction = 2;
             
                 UpdateInputDirection();
@@ -121,8 +129,7 @@ namespace Controls
         
             _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, maxSpeed);
         
-            if(debugMode)
-                ShowDebug();
+            ShowDebug();
         }
 
         private void UpdateGrounded()   
@@ -130,6 +137,14 @@ namespace Controls
             RaycastHit hitGround;
             int layerMask = ~LayerMask.GetMask("Player");
             _isGrounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out hitGround, 1.5f, layerMask);
+        }
+
+        private void UpdateStickStatus()
+        {
+            if (_isSticked)
+                _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+            else
+                _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         }
 
         private void UpdateInputDirection()
@@ -169,17 +184,34 @@ namespace Controls
         {
             #region DebugRays
 
-            var position = transform.position;
-            Debug.DrawRay(position,  _inputDirection * 2.0f, Color.green);
-            Debug.DrawRay(position,  _rigidbody.velocity * 2.0f, Color.blue);
-            Debug.DrawRay(_camera.transform.position, _camera.transform.forward * 3f, Color.yellow);
+            if (enableDebugRay)
+            {
+                var position = transform.position;
+                Debug.DrawRay(position,  _inputDirection * 2.0f, Color.green);
+                Debug.DrawRay(position,  _rigidbody.velocity * 2.0f, Color.blue);
+                Debug.DrawRay(_camera.transform.position, _camera.transform.forward * 3f, Color.yellow);
+            }
             #endregion
         
             #region Gun
-            if(IsAttracting)
-                Debug.Log("Attracting");
-            if(IsRepelling)
-                Debug.Log("Repelling");
+
+            if (enableDebugGun)
+            {
+                if(IsAttracting)
+                    Debug.Log("Attracting");
+                if(IsRepelling)
+                    Debug.Log("Repelling");
+            }
+            #endregion
+            
+            #region Stick
+            if(enableSticky)
+            {
+                if(_isSticked)
+                    Debug.Log("IsSticked");
+                if(!_isSticked)
+                    Debug.Log("IsFree");
+            }
             #endregion
 
         }
@@ -194,9 +226,10 @@ namespace Controls
             if (Physics.Raycast(_camera.transform.position, _camera.transform.forward, out hit, maxRange,
                 layerMask))
             {
-                if (hit.transform.TryGetComponent(out Target))
+                Magnetic target;
+                if (hit.transform.TryGetComponent(out target))
                 {
-                    if (Target is {IsStatic: true})
+                    if (target is {IsStatic: true})
                     {
                         float acceleration = staticAcceleration.Evaluate((hit.distance) / maxRange);
                         _rigidbody.AddForce(
@@ -212,6 +245,12 @@ namespace Controls
             }
         
             TargetPosition = hit.point;
+        }
+
+        private void OnCollisionStay(Collision other)
+        {
+            if(other.gameObject.GetComponent<Magnetic>())
+                _isSticked = IsAttracting;
         }
     }
 }
