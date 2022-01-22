@@ -35,13 +35,13 @@ public class PlayerController : MonoBehaviour
     private bool _isGrounded = false;
 
     #region GunLogics  
-    private bool _IsTryingToRepel = false;
-    private bool _IsTryingToAttract = false;
-    private bool _RepelLocked = false; 
-    private bool _AttractLocked = false;
-    private bool _IsAttracting => _IsTryingToAttract && !_AttractLocked;
-    private bool _IsRepeling => _IsTryingToRepel && !_RepelLocked;
-    private bool _IsUsingGun => _IsRepeling || _IsAttracting;
+    private bool _isTryingToRepel = false;
+    private bool _isTryingToAttract = false;
+    private bool _repelLocked = false; 
+    private bool _attractLocked = false;
+    private bool IsAttracting => _isTryingToAttract && !_attractLocked;
+    private bool IsRepelling => _isTryingToRepel && !_repelLocked;
+    private bool IsUsingGun => IsRepelling || IsAttracting;
     #endregion
     
     #region Inputs
@@ -70,8 +70,8 @@ public class PlayerController : MonoBehaviour
     {
         _VecticalAxis = Input.GetAxis("Vertical");
         _HorizontalAxis = Input.GetAxis("Horizontal");
-        _IsTryingToAttract = Input.GetMouseButton(0);
-        _IsTryingToRepel = Input.GetMouseButton(1);
+        _isTryingToAttract = Input.GetMouseButton(0);
+        _isTryingToRepel = Input.GetMouseButton(1);
         
         if(!_isJumping)
             _isJumping = Input.GetKeyDown(KeyCode.Space);
@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
     {
         UpdateGrounded();
 
-        if(!_IsUsingGun)
+        if(!IsUsingGun)
         {
             _physicsMaterial.dynamicFriction = 2;
             
@@ -93,18 +93,18 @@ public class PlayerController : MonoBehaviour
         else
         {
             _physicsMaterial.dynamicFriction = 0;
-            _RepelLocked = _IsAttracting;
-            _AttractLocked = _IsRepeling;
+            _repelLocked = IsAttracting;
+            _attractLocked = IsRepelling;
             UpdateMagnetGunEffect();
         }
 
         if (Input.GetMouseButtonUp(0)) // Pulling button UP
         {
-            _RepelLocked = false;
+            _repelLocked = false;
         }
         if (Input.GetMouseButtonUp(1)) // Pushing button UP
         {
-            _AttractLocked = false;
+            _attractLocked = false;
         }
 
         _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, maxSpeed);
@@ -166,9 +166,9 @@ public class PlayerController : MonoBehaviour
         #endregion
         
         #region Gun
-        if(_IsAttracting)
+        if(IsAttracting)
             Debug.Log("Attracting");
-        if(_IsRepeling)
+        if(IsRepelling)
             Debug.Log("Repelling");
         #endregion
 
@@ -188,13 +188,13 @@ public class PlayerController : MonoBehaviour
             if(magneticComponent is {IsStatic: true})
             {
                 float acceleration = staticAcceleration.Evaluate((hit.distance)/maxRange);
-                _rigidbody.AddForce((_IsAttracting? _camera.transform.forward : -_camera.transform.forward) * (acceleration * forceMagnet * Time.deltaTime) , ForceMode.Force);
+                _rigidbody.AddForce((IsAttracting? _camera.transform.forward : -_camera.transform.forward) * (acceleration * forceMagnet * Time.deltaTime) , ForceMode.Force);
             }
         }
         else
         {
-            _RepelLocked = false;
-            _AttractLocked = false;
+            _repelLocked = false;
+            _attractLocked = false;
         }
 
     }
