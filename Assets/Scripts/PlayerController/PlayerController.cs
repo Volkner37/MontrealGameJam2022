@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
 
     [Space]
     [Header("Gun settings")] 
-    [SerializeField] private float maxDistance;
+    [SerializeField] private float maxRange;
     [SerializeField] private float forceMagnet;
     [SerializeField] private float forceMagnetObject;
     [SerializeField] private AnimationCurve staticAcceleration;
@@ -52,8 +52,7 @@ public class PlayerController : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         UpdateGrounded();
         UpdateMouseInput();
@@ -128,7 +127,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && _grounded)
         {
-            _rigidbody.AddForce(forceJump * Vector3.up, ForceMode.Impulse);
+            _rigidbody.AddForce(Vector3.up * (forceJump * Time.deltaTime), ForceMode.Impulse);
         }
     }
 
@@ -162,7 +161,7 @@ public class PlayerController : MonoBehaviour
         //Without this, the player could block the raycast.
         int layerMask = ~LayerMask.GetMask("Player");
 
-        if (Physics.Raycast(_camera.transform.position, _camera.transform.forward, out hit, maxDistance, layerMask))
+        if (Physics.Raycast(_camera.transform.position, _camera.transform.forward, out hit, maxRange, layerMask))
         { 
             GameObject objectHit = hit.transform.gameObject;
 
@@ -171,8 +170,8 @@ public class PlayerController : MonoBehaviour
                 Magnetic interable = objectHit.GetComponent<Magnetic>();
                 if(interable.IsStatic)
                 {
-                    float acceleration = staticAcceleration.Evaluate((hit.distance)/maxDistance);
-                    _rigidbody.AddForce(acceleration * forceMagnet * (_IsAttracting? _camera.transform.forward : -_camera.transform.forward) , ForceMode.Impulse);
+                    float acceleration = staticAcceleration.Evaluate((hit.distance)/maxRange);
+                    _rigidbody.AddForce((_IsAttracting? _camera.transform.forward : -_camera.transform.forward) * (acceleration * forceMagnet * Time.deltaTime) , ForceMode.Impulse);
                 }
             }
         }
