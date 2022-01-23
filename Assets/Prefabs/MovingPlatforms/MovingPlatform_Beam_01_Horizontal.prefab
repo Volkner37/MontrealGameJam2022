@@ -1160,7 +1160,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 381491029146719224}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.755, y: -1.813654, z: 3.6657143}
+  m_LocalPosition: {x: 0.7549998, y: -1.8136533, z: 3.6657143}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 381491029608270068}
@@ -1209,9 +1209,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _waypointsLocked: 1
+  _usingRelativeWaypoints: 1
   waypoints:
-  - {x: -20.57809, y: 20.74952, z: -28.161428}
-  - {x: -24.51259, y: 20.74952, z: -28.161428}
+  - {x: 0, y: 0, z: 0}
+  - {x: 3.9330006, y: 0, z: 0}
 --- !u!1 &381491029269582459
 GameObject:
   m_ObjectHideFlags: 0
