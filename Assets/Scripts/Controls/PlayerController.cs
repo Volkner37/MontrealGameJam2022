@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 _magnetVelocity;
     private bool _isGrounded = false;
     private VisualEffect _VFX;
+    private Vector3 _lastPosition;
 
     #region Attract/Retract
     private bool _isTryingToRepel = false;
@@ -59,8 +60,8 @@ public class PlayerController : MonoBehaviour
     private Magnetic currentTarget;
     private float currentTargetDistance;
     private bool _isLookingAtMagneticObject => currentTarget != null;
-    private bool IsAttracting => _isTryingToAttract && !_attractLocked && _isLookingAtMagneticObject;
-    private bool IsRepelling => _isTryingToRepel && !_repelLocked && _isLookingAtMagneticObject;
+    private bool IsAttracting => _isTryingToAttract && _isLookingAtMagneticObject;
+    private bool IsRepelling => _isTryingToRepel && _isLookingAtMagneticObject;
     private bool IsUsingGun => (IsRepelling || IsAttracting);
     public Vector3 TargetPosition { get; private set; }
     #endregion
@@ -84,6 +85,7 @@ public class PlayerController : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _physicsMaterial = GetComponent<CapsuleCollider>().material;
         _VFX = GetComponentInChildren<VisualEffect>();
+        _VFX.enabled = true;
     }
 
     void Update()
@@ -145,8 +147,8 @@ public class PlayerController : MonoBehaviour
             _velocity = Vector3.zero;
             TargetPosition = Vector3.zero;
             _isSticked = false;
-            _VFX.Stop();
-
+            
+            StopVFX();
             CalculateVelocityDecay();
             
             //Apply jumping forces to velocity
@@ -169,12 +171,6 @@ public class PlayerController : MonoBehaviour
             _attractLocked = IsRepelling;
             UpdateMagnetGunEffect();
             _magnetVelocity = _rigidbody.velocity;
-            
-            
-            _VFX.SetVector3("origin", gunTipTransform.transform.position);
-            _VFX.SetVector3("target", TargetPosition);
-            
-            _VFX.Play();
         }
     
         //Limits the max speed of the overall velocity
@@ -183,15 +179,34 @@ public class PlayerController : MonoBehaviour
         ShowDebug();
     }
 
+    private void PlayVFX()
+    {
+        _VFX.SetVector3("origin", gunTipTransform.transform.position);
+        _VFX.SetVector3("target", TargetPosition);
+        _VFX.Play();
+    }
+
+    private void StopVFX()
+    {
+        _VFX.Stop();
+    }
+
     private void CalculateVelocityDecay()
     {
-        //Decay
+        //Decay overtime
         if (_magnetVelocity.magnitude - (_magnetVelocity.normalized * _magnetVelocityDecay).magnitude < 0)
         {
             _magnetVelocity = Vector3.zero;
         }
         else
             _magnetVelocity -= _magnetVelocity.normalized * (_magnetVelocityDecay * Time.deltaTime);
+        
+        //If we enter in a wall.
+        float speed = (transform.position - _lastPosition).magnitude / Time.deltaTime;
+        _lastPosition = transform.position;
+
+        if (speed <= 1)
+            _magnetVelocity = Vector3.zero;
     }
 
 
@@ -287,7 +302,7 @@ public class PlayerController : MonoBehaviour
             Debug.DrawRay(position,  _velocity * 2.0f, Color.green);
             Debug.DrawRay(position,  _rigidbody.velocity * 2.0f, Color.blue);
             Debug.DrawRay(position, _magnetVelocity * 2.0f, Color.red);
-            Debug.DrawRay(_camera.transform.position, _camera.transform.forward * 3f, Color.yellow);
+            Debug.DrawRay(_camera.transform.position, _camera.transform.forward * maxRange, Color.yellow);
         }
         #endregion
     
@@ -346,7 +361,7 @@ public class PlayerController : MonoBehaviour
 
     void UpdateMagnetGunEffect()
     {
-        if (_isLookingAtMagneticObject)
+        if (_isLookingAtMagneticObject && ((_isTryingToAttract && !_attractLocked) || (_isTryingToRepel && !_repelLocked)))
         {
             if (currentTarget.IsStatic)
             {
@@ -354,11 +369,10 @@ public class PlayerController : MonoBehaviour
                 _rigidbody.AddForce(
                     (IsAttracting ? _camera.transform.forward : -_camera.transform.forward) *
                     (acceleration * forceMagnet * Time.deltaTime), ForceMode.Force);
+                
+                PlayVFX();
             }
         }
-
-        _repelLocked = false;
-        _attractLocked = false;
     }
 
     private void OnCollisionStay(Collision other)
