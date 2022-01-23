@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6374332337812990919}
   - component: {fileID: 8059744485886649442}
   - component: {fileID: 5205318538528493736}
+  - component: {fileID: 595464437313686341}
   m_Layer: 0
   m_Name: MouseWheel
   m_TagString: Untagged
@@ -81,3 +82,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &595464437313686341
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5998229355116933501}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 3688016454715917919, guid: dee6c8f608226a74789e7706ed87bc99, type: 3}
