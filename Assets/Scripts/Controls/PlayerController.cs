@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
+using UnityEngine.VFX;
 using Color = UnityEngine.Color;
 using Vector3 = UnityEngine.Vector3;
 
@@ -32,6 +33,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float forceMagnet;
     [SerializeField] private AnimationCurve staticAcceleration;
     [SerializeField] private float _magnetVelocityDecay;
+    [SerializeField] private Transform gunTipTransform;
 
     [Space] [Header("Debug Options")] 
     [SerializeField] private TextMeshProUGUI debugTextOutput;
@@ -46,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 _velocity;
     private Vector3 _magnetVelocity;
     private bool _isGrounded = false;
+    private VisualEffect _VFX;
 
     #region Attract/Retract
     private bool _isTryingToRepel = false;
@@ -80,6 +83,7 @@ public class PlayerController : MonoBehaviour
         _camera = GetComponentInChildren<Camera>();
         _rigidbody = GetComponent<Rigidbody>();
         _physicsMaterial = GetComponent<CapsuleCollider>().material;
+        _VFX = GetComponentInChildren<VisualEffect>();
     }
 
     void Update()
@@ -141,6 +145,7 @@ public class PlayerController : MonoBehaviour
             _velocity = Vector3.zero;
             TargetPosition = Vector3.zero;
             _isSticked = false;
+            _VFX.Stop();
 
             CalculateVelocityDecay();
             
@@ -159,10 +164,17 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            _velocity = Vector3.zero;
             _repelLocked = IsAttracting;
             _attractLocked = IsRepelling;
             UpdateMagnetGunEffect();
             _magnetVelocity = _rigidbody.velocity;
+            
+            
+            _VFX.SetVector3("origin", gunTipTransform.transform.position);
+            _VFX.SetVector3("target", TargetPosition);
+            
+            _VFX.Play();
         }
     
         //Limits the max speed of the overall velocity

@@ -426,14 +426,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316a8c3f671567e4e9eace9d01a8c5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 35
+  maxSpeed: 10
   gravity: 20
-  forwardAcceleration: 30
-  backwardAcceleration: 25
-  sideAcceleration: 25
+  forwardAcceleration: 2
+  backwardAcceleration: 2
+  sideAcceleration: 2
   airControlRatio: 0.3
   allowJumping: 1
-  forceJump: 10
+  forceJump: 3
   maxRange: 80
   forceMagnet: 1000
   staticAcceleration:
