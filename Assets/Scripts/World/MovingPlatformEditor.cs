@@ -15,8 +15,8 @@ public class MovingPlatformEditor : Editor
         if (script.WaypointsLocked)
         {
             EditorGUILayout.HelpBox(
-                "The waypoints are locked. Unlock them to move the platform without changing " +
-                "affecting the waypoints.",
+                "The waypoints are locked. Unlock them to move the platform without " +
+                "moving the waypoints.",
                 MessageType.Info);
             if (GUILayout.Button("Unlock Waypoints"))
             {
@@ -28,7 +28,7 @@ public class MovingPlatformEditor : Editor
         {
             EditorGUILayout.HelpBox(
                 "The waypoints are not locked. Moving the platform will not move the " +
-                "platform with it. Lock the waypoints using the button below once they " +
+                "waypoints with it. Lock the waypoints using the button below once they " +
                 "are placed.",
                 MessageType.Warning);
             if (GUILayout.Button("Lock Waypoints"))

@@ -127,16 +127,13 @@ public class MovingPlatform : MonoBehaviour
         for (int i = 0; i < waypoints.Length; ++i)
         {
             var wB = waypoints[i];
-            if (_usingRelativeWaypoints) { wB = transform.position + wB; }
+            if (_usingRelativeWaypoints) wB = transform.position + wB;
             Gizmos.DrawSphere(wB, 0.5f);
 
-            if (i == 0) { continue; }
+            if (i == 0) continue;
 
             var wA = waypoints[i-1];
-            if (_usingRelativeWaypoints)
-            {
-                wA = transform.position + wA;
-            }
+            if (_usingRelativeWaypoints) wA = transform.position + wA;
             Gizmos.DrawLine(wA, wB);
         }
     }
