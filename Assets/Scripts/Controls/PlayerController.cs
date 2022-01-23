@@ -152,17 +152,6 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (Input.GetMouseButtonUp(0))
-        {
-            _isTryingToAttract = false;
-            _repelLocked = false;
-        }
-        if (Input.GetMouseButtonUp(1))
-        {
-            _isTryingToRepel = false;
-            _attractLocked = false;
-        }
-
         UpdateGrounded();
         UpdateStickStatus();
         
