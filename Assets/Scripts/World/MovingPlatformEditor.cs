@@ -21,6 +21,7 @@ public class MovingPlatformEditor : Editor
             if (GUILayout.Button("Unlock Waypoints"))
             {
                 script.WaypointsLocked = false;
+                EditorUtility.SetDirty( script );
             }
             GUI.enabled = false;
         }
@@ -34,6 +35,7 @@ public class MovingPlatformEditor : Editor
             if (GUILayout.Button("Lock Waypoints"))
             {
                 script.WaypointsLocked = true;
+                EditorUtility.SetDirty( script );
             }
         }
 
@@ -48,6 +50,7 @@ public class MovingPlatformEditor : Editor
             if (GUILayout.Button("Set Waypoint " + b.ToString()))
             {
                 script.SetWaypoint(b);
+                EditorUtility.SetDirty( script );
             }
         }
 
