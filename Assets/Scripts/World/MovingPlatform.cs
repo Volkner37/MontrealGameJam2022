@@ -19,6 +19,10 @@ public class MovingPlatform : MonoBehaviour
     [HideInInspector]
     [SerializeField]
     private bool _usingRelativeWaypoints;
+    [HideInInspector]
+    [SerializeField]
+    private Quaternion _origRotation = Quaternion.identity;
+
     public bool WaypointsLocked
     {
         get => _waypointsLocked;
@@ -127,13 +131,19 @@ public class MovingPlatform : MonoBehaviour
         for (int i = 0; i < waypoints.Length; ++i)
         {
             var wB = waypoints[i];
-            if (_usingRelativeWaypoints) wB = transform.position + wB;
+            if (_usingRelativeWaypoints)
+                wB =
+                    transform.position
+                    + (transform.rotation * Quaternion.Inverse(_origRotation)) * wB;
             Gizmos.DrawSphere(wB, 0.5f);
 
             if (i == 0) continue;
 
             var wA = waypoints[i-1];
-            if (_usingRelativeWaypoints) wA = transform.position + wA;
+            if (_usingRelativeWaypoints)
+                wA =
+                    transform.position
+                    + (transform.rotation * Quaternion.Inverse(_origRotation)) * wA;
             Gizmos.DrawLine(wA, wB);
         }
     }
@@ -158,8 +168,10 @@ public class MovingPlatform : MonoBehaviour
         if (useRelative == _usingRelativeWaypoints)
             return;
 
-        if (useRelative)
+        if (useRelative) {
             SnapToWaypoint(0);
+            _origRotation = transform.rotation;
+        }
 
         for (int i = 0; i < waypoints.Length; ++i)
         {
@@ -168,7 +180,9 @@ public class MovingPlatform : MonoBehaviour
                 waypoints[i] = waypoints[i] - transform.position;
             } else {
                 // convert to world
-                waypoints[i] = transform.position + waypoints[i];
+                waypoints[i] =
+                    transform.position
+                    + transform.rotation * (Quaternion.Inverse(_origRotation)) * waypoints[i];
             }
         }
         _usingRelativeWaypoints = useRelative;
