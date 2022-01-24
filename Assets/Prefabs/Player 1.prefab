@@ -68,17 +68,17 @@ MonoBehaviour:
   maxHorizontalSpeed: 10
   maxVerticalSpeed: 10
   gravity: 9.8
-  forwardAcceleration: 6
+  forwardAcceleration: 5
   backwardAcceleration: 4
-  sideAcceleration: 6
-  airControlRatio: 0.5
+  sideAcceleration: 5
+  airControlRatio: 0.8
   allowJumping: 1
   forceJump: 7
   dropForce: 0
   maxRange: 15
   _magnetVelocityDecay: 4
   gunTipTransform: {fileID: 8347168266401156969}
-  attractionForceMagnet: 10
+  attractionForceMagnet: 200
   staticAttractionAcceleration:
     serializedVersion: 2
     m_Curve:
@@ -103,7 +103,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  repulsionForceMagnet: 10
+  repulsionForceMagnet: 200
   staticRepulsionAcceleration:
     serializedVersion: 2
     m_Curve:
