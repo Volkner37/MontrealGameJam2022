@@ -1211,6 +1211,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   _waypointsLocked: 1
   _usingRelativeWaypoints: 1
+  _origRotation: {x: -0, y: -0, z: -0, w: 1}
   waypoints:
   - {x: 0, y: 0, z: 0}
   - {x: 3.9330006, y: 0, z: 0}
