@@ -1320,6 +1320,7 @@ GameObject:
   - component: {fileID: 5536556008370688335}
   - component: {fileID: 5536556008370688332}
   - component: {fileID: 5536556008370688333}
+  - component: {fileID: 4780576185752752701}
   m_Layer: 0
   m_Name: Metal_Mag_Plate_Bottom (7)
   m_TagString: Untagged
@@ -1620,6 +1621,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &4780576185752752701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536556008370688331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5536556008371686294
 GameObject:
   m_ObjectHideFlags: 0
@@ -4451,6 +4464,7 @@ GameObject:
   - component: {fileID: 5536556008757625670}
   - component: {fileID: 5536556008757625671}
   - component: {fileID: 5536556008757625668}
+  - component: {fileID: 7575928970737729976}
   m_Layer: 0
   m_Name: Metal_Mag_Plate_Bottom (6)
   m_TagString: Untagged
@@ -4751,6 +4765,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &7575928970737729976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536556008757625666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5536556008809320117
 GameObject:
   m_ObjectHideFlags: 0
@@ -5390,6 +5416,7 @@ GameObject:
   - component: {fileID: 5536556008882516855}
   - component: {fileID: 5536556008882516852}
   - component: {fileID: 5536556008882516853}
+  - component: {fileID: 3512644479259415588}
   m_Layer: 0
   m_Name: Metal_Mag_Plate_Bottom (5)
   m_TagString: Untagged
@@ -5690,6 +5717,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &3512644479259415588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536556008882516851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5536556008884091529
 GameObject:
   m_ObjectHideFlags: 0
@@ -7351,6 +7390,7 @@ GameObject:
   - component: {fileID: 5536556009145230270}
   - component: {fileID: 5536556009145230271}
   - component: {fileID: 5536556009145230268}
+  - component: {fileID: 8788325396674514405}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -7651,6 +7691,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &8788325396674514405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536556009145230269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5536556009158322337
 GameObject:
   m_ObjectHideFlags: 0
@@ -10794,6 +10846,7 @@ GameObject:
   - component: {fileID: 5536556009684992688}
   - component: {fileID: 5536556009684992689}
   - component: {fileID: 5536556009684992686}
+  - component: {fileID: 8393806695127560104}
   m_Layer: 0
   m_Name: Metal_Mag_Plate_Bottom (8)
   m_TagString: Untagged
@@ -11094,6 +11147,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &8393806695127560104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5536556009684992684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5536556009828285455
 GameObject:
   m_ObjectHideFlags: 0

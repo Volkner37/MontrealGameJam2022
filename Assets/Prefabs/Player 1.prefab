@@ -71,14 +71,14 @@ MonoBehaviour:
   forwardAcceleration: 5
   backwardAcceleration: 4
   sideAcceleration: 5
-  airControlRatio: 0.8
+  airControlRatio: 1
   allowJumping: 1
   forceJump: 7
   dropForce: 0
   maxRange: 15
-  _magnetVelocityDecay: 4
+  _magnetVelocityDecay: 3
   gunTipTransform: {fileID: 8347168266401156969}
-  attractionForceMagnet: 200
+  attractionForceMagnet: 325
   staticAttractionAcceleration:
     serializedVersion: 2
     m_Curve:
@@ -103,31 +103,31 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  repulsionForceMagnet: 200
+  repulsionForceMagnet: 400
   staticRepulsionAcceleration:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: -0.0000057751313
       value: 2.0088558
-      inSlope: -4.177876
-      outSlope: -4.177876
+      inSlope: -6.9025817
+      outSlope: -6.9025817
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.14151472
-      value: 1.4176008
-      inSlope: -2.4909585
-      outSlope: -2.4909585
+      time: 0.08540815
+      value: 1.4192792
+      inSlope: -4.1463723
+      outSlope: -4.1463723
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.64304703
-      value: 1.0143483
+      time: 0.3863942
+      value: 1.0008595
       inSlope: -0.08933884
       outSlope: -0.08933884
       tangentMode: 0
@@ -135,10 +135,10 @@ MonoBehaviour:
       inWeight: 0.09784624
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: -0.040196523
-      outSlope: -0.040196523
+      time: 0.9957886
+      value: 0.9831543
+      inSlope: -0.029053766
+      outSlope: -0.029053766
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
