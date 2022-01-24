@@ -1893,6 +1893,7 @@ GameObject:
   - component: {fileID: 5038825848517382838}
   - component: {fileID: 5038825848517382839}
   - component: {fileID: 5038825848517382836}
+  - component: {fileID: 8354502177293978953}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -2194,6 +2195,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &8354502177293978953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038825848517382842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5038825848584880053
 GameObject:
   m_ObjectHideFlags: 0
@@ -2520,6 +2533,7 @@ GameObject:
   - component: {fileID: 5038825848627494029}
   - component: {fileID: 5038825848627494034}
   - component: {fileID: 5038825848627494035}
+  - component: {fileID: 2140793735737018869}
   m_Layer: 0
   m_Name: Metal_Mag_Plate_Bottom (3)
   m_TagString: Untagged
@@ -2820,6 +2834,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &2140793735737018869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038825848627494033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5038825848628477993
 GameObject:
   m_ObjectHideFlags: 0
@@ -3465,6 +3491,7 @@ GameObject:
   - component: {fileID: 5038825848894244168}
   - component: {fileID: 5038825848894244169}
   - component: {fileID: 5038825848894244174}
+  - component: {fileID: 2693612129659251079}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -3766,6 +3793,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &2693612129659251079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038825848894244172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5038825848980075050
 GameObject:
   m_ObjectHideFlags: 0
@@ -5174,6 +5213,7 @@ Transform:
   - {fileID: 8857530254824783969}
   - {fileID: 5038825849104917267}
   - {fileID: 5764031219233138898}
+  - {fileID: 2522028229642561726}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5598,6 +5638,7 @@ GameObject:
   - component: {fileID: 5038825849581431739}
   - component: {fileID: 5038825849581431736}
   - component: {fileID: 5038825849581431737}
+  - component: {fileID: 3655214292744489524}
   m_Layer: 0
   m_Name: Metal_Mag_Plate_Bottom (2)
   m_TagString: Untagged
@@ -5898,6 +5939,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &3655214292744489524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5038825849581431743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe5ccba09adbca4baf75b0d85d57a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5038825849584633878
 GameObject:
   m_ObjectHideFlags: 0
@@ -10235,6 +10288,68 @@ Transform:
   m_Father: {fileID: 5038825849360855032}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &3397500046384473217
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5038825849360855032}
+    m_Modifications:
+    - target: {fileID: 875478551259024435, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_Name
+      value: Player 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -12.782692
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -9.128
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.574
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f2caf2c4841405448999030aaffab411, type: 3}
+--- !u!4 &2522028229642561726 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 875478551259024447, guid: f2caf2c4841405448999030aaffab411, type: 3}
+  m_PrefabInstance: {fileID: 3397500046384473217}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5038825848563522246
 PrefabInstance:
   m_ObjectHideFlags: 0
