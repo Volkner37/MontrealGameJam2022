@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class setleveloptions : MonoBehaviour
+public class SetLevelOptions : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
