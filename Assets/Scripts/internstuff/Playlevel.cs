@@ -1,3 +1,4 @@
+using Assets.Scripts.Utils;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,8 +13,6 @@ public class Playlevel : MonoBehaviour
 
     public void LoadLevel()
     {
-        Debug.Log(dropdown.options[dropdown.value].text);
-        SceneManager.LoadScene(dropdown.options[dropdown.value].text);
-
+        SceneLoaderUtils.LoadScene(dropdown.options[dropdown.value].text);
     }
 }

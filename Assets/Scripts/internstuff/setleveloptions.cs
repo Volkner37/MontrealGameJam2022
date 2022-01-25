@@ -8,7 +8,6 @@ using UnityEngine.UI;
 
 public class SetLevelOptions : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     { 
         var info = new DirectoryInfo("Assets/Scenes/FINAL/Levels");
@@ -20,12 +19,4 @@ public class SetLevelOptions : MonoBehaviour
         {
             dropdown.options.Add(new TMP_Dropdown.OptionData(option));
         }
-
     }
-    
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}
