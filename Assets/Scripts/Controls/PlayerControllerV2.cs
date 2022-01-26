@@ -21,10 +21,11 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private float forwardSpeed = 10;
     [SerializeField] private float backwardSpeed = 10;
     [SerializeField] private float sideSpeed = 10;
-    
-    [Space]
-    [Header("Gun Settings")]
-    [Header("Shared")]
+
+    [Space] 
+    [Header("Gun Settings")] 
+    [Header("Shared")] 
+    [SerializeField] private GameObject gunModel;
     [SerializeField] private float maxRange;
     [SerializeField] private Transform gunTipTransform;
     [Header("Attraction")]
@@ -65,6 +66,8 @@ public class PlayerControllerV2 : MonoBehaviour
     private bool _isGrounded;
     private bool _needJumping;
     private bool _isJumping;
+    private bool _isSticked;
+    private bool _isOnPlatform;
     #endregion
 
     #region Target
@@ -77,10 +80,12 @@ public class PlayerControllerV2 : MonoBehaviour
     #region Others
     private Camera _camera;
     private Rigidbody _rigidbody;
+    private GameObject _currentParent;
     #endregion
 
     #region Effects
     private VisualEffect _gunVfx;
+
     #endregion
     // Start is called before the first frame update
     void Start()
@@ -107,7 +112,6 @@ public class PlayerControllerV2 : MonoBehaviour
         {
             if (hit.transform.TryGetComponent(out currentTarget))
             {
-                Debug.Log($"Found target at {hit.distance} (distance)" );
                 _currentTargetPosition = hit.point;
                 _currentTargetDistance = hit.distance;
                 return;
@@ -132,6 +136,7 @@ public class PlayerControllerV2 : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             _isTryingToAttract = false;
+            _isSticked = false;
         }
         if (Input.GetMouseButtonUp(1))
         {
@@ -274,4 +279,39 @@ public class PlayerControllerV2 : MonoBehaviour
         _gunVfx.Stop();
     }
 
+    private void SetParent(GameObject otherGameObject)
+    {
+        if (otherGameObject != null)
+        {
+            _currentParent = otherGameObject;
+            transform.SetParent(_currentParent.transform);
+            _isOnPlatform = true;
+            Debug.Log("attaching");
+        }
+        else
+        {
+            _currentParent.transform.DetachChildren();
+            _currentParent = null;
+            _isOnPlatform = false;
+            Debug.Log("detaching");
+        }
+    }
+    
+    private void OnCollisionEnter(Collision other)
+    {
+        if(other.gameObject.GetComponent<Magnetic>() == currentTarget)
+            _isSticked = IsAttracting;
+        if (other.gameObject.TryGetComponent<MovingPlatform>(out _))
+        {
+            SetParent(other.gameObject);
+        }
+    }
+
+    private void OnCollisionExit(Collision other)
+    {
+        if (_isOnPlatform && other.gameObject == _currentParent && other.gameObject.TryGetComponent<MovingPlatform>(out _))
+        {
+            SetParent(null);
+        }
+    }
 }
