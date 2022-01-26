@@ -26,8 +26,10 @@ public class PlayerControllerV2 : MonoBehaviour
     [Header("Gun Settings")] 
     [Header("Shared")] 
     [SerializeField] private GameObject gunModel;
+    [SerializeField] private Transform gunPosition;
     [SerializeField] private float maxRange;
     [SerializeField] private Transform gunTipTransform;
+    [SerializeField] private float gunReplacePositionSpeed = 0.5f;
     [Header("Attraction")]
     [SerializeField] private float attractionForceMagnet;
     [SerializeField] private AnimationCurve staticAttractionAcceleration;
@@ -54,7 +56,6 @@ public class PlayerControllerV2 : MonoBehaviour
     #endregion
     
     #region Gun
-    
     private bool _repelLocked = false; 
     private bool _attractLocked = false;
     private bool IsAttracting => _isTryingToAttract && IsLookingAtMagneticObject;
@@ -101,6 +102,17 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         UpdateInputs();
         CheckForMagneticObject();
+        AnimateGun();
+        
+    }
+
+    private void AnimateGun()
+    {
+        if (!_isSticked)
+        {
+            gunModel.transform.localPosition = Vector3.Lerp(gunModel.transform.localPosition, Vector3.zero, gunReplacePositionSpeed * Time.deltaTime);
+            gunModel.transform.localRotation = Quaternion.Lerp(gunModel.transform.localRotation, Quaternion.LookRotation(_currentTargetPosition * -1), gunReplacePositionSpeed * Time.deltaTime);
+        }
     }
 
     private void CheckForMagneticObject()
@@ -124,7 +136,8 @@ public class PlayerControllerV2 : MonoBehaviour
         
         currentTarget = null;
         _currentTargetDistance = 0;
-        _currentTargetPosition = Vector3.zero;    }
+        _currentTargetPosition = Vector3.zero;    
+    }
 
     private void UpdateInputs()
     {
@@ -152,6 +165,8 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         UpdateGrounded();
         UpdateInputDirection();
+        UpdateStickStatus();
+        SetGunLock();
         
         //Check for jump
         if (_needJumping)
@@ -163,14 +178,14 @@ public class PlayerControllerV2 : MonoBehaviour
         if (IsUsingGun)
         {
             UpdateMagnetGunEffect();
-            PlayVFX();
+            if(!_isSticked)
+                PlayVFX();
         }
         else
         {
             _magneticVelocity = Vector3.zero;
             StopVFX();
         }
-
 
         Vector3 velocity = _playerVelocity + _jumpVelocity;
 
@@ -214,6 +229,23 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         int layerMask = ~LayerMask.GetMask("Player");
         _isGrounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out _, 1.1f, layerMask);
+    }
+
+    private void UpdateStickStatus()
+    {
+        _rigidbody.constraints = _isSticked ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+    }
+
+    private void SetGunLock()
+    {
+        if (_isSticked)
+        {
+            gunModel.transform.SetParent(transform);
+        }
+        else
+        {
+            gunModel.transform.SetParent(gunPosition);
+        }
     }
 
     private void ShowDebug()
