@@ -2,12 +2,8 @@ using UnityEngine;
 
 public class MouseHandler : MonoBehaviour
 {
-    [SerializeField]
-    [Range(0.5f, 10.0f)]
-    private float horizontalSpeed;
-    [SerializeField] 
-    [Range(0.5f, 10.0f)]
-    private float verticalSpeed;
+    [SerializeField] [Range(0.5f, 10.0f)] private float horizontalSpeed;
+    [SerializeField] [Range(0.5f, 10.0f)] private float verticalSpeed;
 
     private float _xRotation = 0.0f;
     private float _yRotation = 0.0f;
@@ -17,14 +13,16 @@ public class MouseHandler : MonoBehaviour
     void Start()
     {
         _camera = GetComponentInChildren<Camera>();
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
-
+    
     // Update is called once per frame
     void Update()
     {
         float mouseX = Input.GetAxis("Mouse X") * horizontalSpeed;
         float mouseY = Input.GetAxis("Mouse Y") * verticalSpeed;
-
+        
         _yRotation += mouseX;
         _xRotation -= mouseY;
         _xRotation = Mathf.Clamp(_xRotation, -90, 90);
