@@ -55,7 +55,6 @@ public class PlayerController : MonoBehaviour
     private Camera _camera;
     private Rigidbody _rigidbody;
     private PhysicMaterial _physicsMaterial;
-    private Vector3 _velocity;
     private Vector3 _magnetVelocity;
     private bool _isGrounded = false;
     private VisualEffect _VFX;
@@ -73,7 +72,11 @@ public class PlayerController : MonoBehaviour
     private bool IsAttracting => _isTryingToAttract && _isLookingAtMagneticObject;
     private bool IsRepelling => _isTryingToRepel && _isLookingAtMagneticObject;
     private bool IsUsingGun => (IsRepelling || IsAttracting);
+    private Vector3 FullVelocity =>  _currentJumpVelocity + _currentGravity + _walkingVelocity;
     public Vector3 TargetPosition { get; private set; }
+    private Vector3 _currentGravity = new Vector3();
+    private Vector3 _currentJumpVelocity;
+    private Vector3 _walkingVelocity;
     #endregion
     
     #region WallStick
@@ -85,12 +88,16 @@ public class PlayerController : MonoBehaviour
     private float _horizontalAxis;
     private bool _isJumping;
     private bool _canJump;
-    private float currentJumpVelocity;
+    
     #endregion
 
     // Start is called before the first frame update
     void Start()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        
         _camera = GetComponentInChildren<Camera>();
         _rigidbody = GetComponent<Rigidbody>();
         _physicsMaterial = GetComponent<CapsuleCollider>().material;
@@ -98,6 +105,7 @@ public class PlayerController : MonoBehaviour
         _VFX.enabled = true;
     }
 
+    #region Update
     void Update()
     {
         UpdateInputs();
@@ -126,7 +134,7 @@ public class PlayerController : MonoBehaviour
         {
             _isJumping = Input.GetKeyDown(KeyCode.Space);
             if(_isJumping)
-                currentJumpVelocity = forceJump;
+                _currentJumpVelocity = forceJump * Vector3.up;
         }
     }
 
@@ -150,6 +158,8 @@ public class PlayerController : MonoBehaviour
         TargetPosition = Vector3.zero;
     }
 
+    #endregion
+    
     void FixedUpdate()
     {
         UpdateGrounded();
@@ -161,43 +171,32 @@ public class PlayerController : MonoBehaviour
         
         if(!IsUsingGun)
         {
+            CalculateGravity();
+
             //Resetting some values
-            //_velocity = Vector3.zero;
             TargetPosition = Vector3.zero;
             _isSticked = false;
             
             StopVFX();
             CalculateVelocityDecay();
             UpdateInputDirection();
-
-            if(!_isJumping && !_isGrounded)
-                ApplyGravity();
-
-            if (_isGrounded)
-            {
-                _velocity.y = 0;
-            }
-            
-            //We apply the calculated velocity
-            _rigidbody.velocity = _velocity + _magnetVelocity + (Vector3.up * currentJumpVelocity);
         }
         else
         {
-            currentJumpVelocity = 0;
-
-            _velocity = Vector3.zero;
+            _currentJumpVelocity = Vector3.zero;
             _repelLocked = IsAttracting;
             _attractLocked = IsRepelling;
             UpdateMagnetGunEffect();
-            _magnetVelocity = _rigidbody.velocity - _velocity - (Vector3.up * currentJumpVelocity);
         }
     
         //Limits the max speed of the overall velocity
-        _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, maxHorizontalSpeed);
+        _rigidbody.velocity = Vector3.ClampMagnitude(FullVelocity, maxHorizontalSpeed);
         
         ShowDebug();
+        
+        _lastPosition = transform.position;
     }
-
+    
     private void PlayVFX()
     {
         _VFX.SetVector3("origin", gunTipTransform.transform.position);
@@ -216,25 +215,38 @@ public class PlayerController : MonoBehaviour
         if (_magnetVelocity.magnitude - (_magnetVelocity.normalized * _magnetVelocityDecay).magnitude < 0)
         {
             _magnetVelocity = Vector3.zero;
+            _currentGravity = Vector3.zero;
         }
         else
             _magnetVelocity -= _magnetVelocity.normalized * (_magnetVelocityDecay * Time.deltaTime);
         
         //If we enter in a wall.
-        float speed = (transform.position - _lastPosition).magnitude / Time.deltaTime;
-        _lastPosition = transform.position;
-
-        if (speed <= 1)
+        if (GetCurrentSpeed() == 0)
+        {
             _magnetVelocity = Vector3.zero;
+        }
+
     }
 
-
-    private void ApplyGravity()
+    private float GetCurrentSpeed()
     {
-        if (_velocity.y > -1 * maxVerticalSpeed)
-            _velocity.y -= gravity * Time.deltaTime;
+        return (transform.position - _lastPosition).magnitude / Time.deltaTime;
+         
+    }
+
+    
+    
+    private void CalculateGravity()
+    {
+        if (_isGrounded || _isSticked)
+            _currentGravity = Vector3.zero;
         else
-            _velocity.y = maxVerticalSpeed * -1;
+        {
+            if (_currentGravity.y > -1 * maxVerticalSpeed)
+                _currentGravity += Vector3.down * (gravity * Time.deltaTime);
+            else
+                _currentGravity = Vector3.down * (maxVerticalSpeed);    
+        }
     }
 
     private void UpdateGrounded()   
@@ -274,8 +286,9 @@ public class PlayerController : MonoBehaviour
         //This prevents to move faster in diagonal
         Vector3 result = Vector3.ClampMagnitude((new Vector3(_camera.transform.right.x,0, _camera.transform.right.z)) * _horizontalAxis + (new Vector3(_camera.transform.forward.x,0, _camera.transform.forward.z)) * _verticalAxis, maxDiagonalSpeed);
 
-        _velocity.x = result.x;
-        _velocity.z = result.z;
+        _walkingVelocity.x = result.x;
+        _walkingVelocity.y = 0;
+        _walkingVelocity.z = result.z;
 
         //To allow the movement to cancel some magnet velocity
         float product = Vector3.Dot(_magnetVelocity, result * -1);
@@ -299,14 +312,14 @@ public class PlayerController : MonoBehaviour
     {
         if (_isJumping && _isGrounded)
         {
-            _velocity.y += currentJumpVelocity;
+            _currentJumpVelocity = Vector3.up * forceJump;
             _isJumping = false;
         }
         
         //We decay the jump velocity with gravity
-        currentJumpVelocity -=  gravity * Time.deltaTime;
-        if (currentJumpVelocity < 0)
-            currentJumpVelocity = 0;
+        _currentJumpVelocity += Vector3.down * (gravity * Time.deltaTime);
+        if (_currentJumpVelocity.y < 0)
+            _currentJumpVelocity = Vector3.zero;
     }
 
     private void ShowDebug()
@@ -316,10 +329,13 @@ public class PlayerController : MonoBehaviour
         if (enableDebugRay)
         {
             var position = transform.position;
-            Debug.DrawRay(position,  _velocity * 2.0f, Color.green);
-            Debug.DrawRay(position,  _rigidbody.velocity * 2.0f, Color.blue);
+            Debug.DrawRay(position,  _walkingVelocity * 2.0f, Color.green);
+            Debug.DrawRay(position,  _currentGravity * 2.0f, Color.magenta);
+            Debug.DrawRay(position,  _currentJumpVelocity * 2.0f, Color.yellow);
             Debug.DrawRay(position, _magnetVelocity * 2.0f, Color.red);
-            Debug.DrawRay(_camera.transform.position, _camera.transform.forward * maxRange, Color.yellow);
+            Debug.DrawRay(position, FullVelocity * 2.0f, Color.black);
+            Debug.DrawRay(position,  _rigidbody.velocity * 2.0f, Color.blue);
+            Debug.DrawRay(_camera.transform.position, _camera.transform.forward * maxRange, Color.white);
         }
         #endregion
     
@@ -373,10 +389,12 @@ public class PlayerController : MonoBehaviour
                                    "\n"+
                                    $"IsLookingAtObject = {_isLookingAtMagneticObject}\n+" +
                                    "\n"+
-                                   $"Current Velocity = {_velocity}\n"+
+                                   $"Current Speed = {GetCurrentSpeed()}\n\n"+
                                    $"Magnetic Velocity = {_magnetVelocity}\n"+
-                                   $"CurrentJumpVelocity = {currentJumpVelocity}\n"+
-                                   $"Total Velocity = {_rigidbody.velocity}\n";
+                                   $"CurrentJumpVelocity = {_currentJumpVelocity}\n"+
+                                   $"Current Gravity = {_currentGravity}\n"+
+                                   $"Current Walking = {_walkingVelocity}\n"+
+                                   $"Total Velocity = {FullVelocity}(Applied : {_rigidbody.velocity})\n";
         }
     }
 
@@ -389,14 +407,18 @@ public class PlayerController : MonoBehaviour
             if (IsRepelling)
             {
                 float acceleration = staticRepulsionAcceleration.Evaluate(currentTargetDistance / maxRange);
-                _rigidbody.AddForce(-_camera.transform.forward * (acceleration * repulsionForceMagnet * Time.deltaTime), ForceMode.Force);     
+                _magnetVelocity = -_camera.transform.forward * (acceleration * repulsionForceMagnet * Time.deltaTime);
+                //_rigidbody.AddForce(-_camera.transform.forward * (acceleration * repulsionForceMagnet * Time.deltaTime), ForceMode.Force);     
             }
             else if (IsAttracting)
             {
                 float acceleration = staticAttractionAcceleration.Evaluate(currentTargetDistance / maxRange);
-                _rigidbody.AddForce(_camera.transform.forward * (acceleration * attractionForceMagnet * Time.deltaTime), ForceMode.Force);   
+                _magnetVelocity = _camera.transform.forward * (acceleration * repulsionForceMagnet * Time.deltaTime);
+                //_rigidbody.AddForce(_camera.transform.forward * (acceleration * attractionForceMagnet * Time.deltaTime), ForceMode.Force);  
             }
-                
+
+            _magnetVelocity += Vector3.down * (gravity * Time.deltaTime);
+
             PlayVFX();
         }
     }
