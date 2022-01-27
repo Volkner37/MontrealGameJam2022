@@ -21,10 +21,11 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private float forwardSpeed = 10;
     [SerializeField] private float backwardSpeed = 10;
     [SerializeField] private float sideSpeed = 10;
+    [SerializeField] private float airControlRatio = 0.3f;
 
-    [Space] 
-    [Header("Gun Settings")] 
+    [Space] [Header("Gun Settings")] 
     [Header("Shared")] 
+    [SerializeField] private Transform defaultLookPosition;
     [SerializeField] private GameObject gunModel;
     [SerializeField] private Transform gunPosition;
     [SerializeField] private float maxRange;
@@ -74,8 +75,8 @@ public class PlayerControllerV2 : MonoBehaviour
     #region Target
     private bool IsLookingAtMagneticObject => currentTarget != null;
     private float _currentTargetDistance;
-    private Vector3 _currentTargetPosition = Vector3.zero;
-    private Magnetic currentTarget = null;
+    public Vector3 _currentTargetPosition = Vector3.zero;
+    public Magnetic currentTarget = null;
     #endregion
     
     #region Others
@@ -103,15 +104,19 @@ public class PlayerControllerV2 : MonoBehaviour
         UpdateInputs();
         CheckForMagneticObject();
         AnimateGun();
-        
     }
 
     private void AnimateGun()
     {
         if (!_isSticked)
         {
-            gunModel.transform.localPosition = Vector3.Lerp(gunModel.transform.localPosition, Vector3.zero, gunReplacePositionSpeed * Time.deltaTime);
-            gunModel.transform.localRotation = Quaternion.Lerp(gunModel.transform.localRotation, Quaternion.LookRotation(_currentTargetPosition * -1), gunReplacePositionSpeed * Time.deltaTime);
+            gunModel.transform.localPosition = Vector3.Slerp(gunModel.transform.localPosition, Vector3.zero, gunReplacePositionSpeed * Time.deltaTime);
+            gunModel.transform.localRotation = Quaternion.Slerp(gunModel.transform.localRotation,Quaternion.identity, gunReplacePositionSpeed * Time.deltaTime);
+
+            //TODO : fix the gun rotation 
+            // gunModel.transform.localRotation = Quaternion.Slerp(gunModel.transform.localRotation,
+            //     Quaternion.LookRotation(_currentTargetPosition - transform.position),
+            //     gunReplacePositionSpeed * Time.deltaTime);
         }
     }
 
@@ -215,10 +220,20 @@ public class PlayerControllerV2 : MonoBehaviour
     
         _horizontalAxis *= sideSpeed;
 
+        if (!_isGrounded)
+        {
+            _verticalAxis *= airControlRatio;
+            _horizontalAxis *= airControlRatio;
+        }
+
         float maxDiagonalSpeed = Mathf.Max(forwardSpeed, backwardSpeed, sideSpeed);
 
         //This prevents to move faster in diagonal
-        Vector3 result = Vector3.ClampMagnitude((new Vector3(_camera.transform.right.x,0, _camera.transform.right.z)) * _horizontalAxis + (new Vector3(_camera.transform.forward.x,0, _camera.transform.forward.z)) * _verticalAxis, maxDiagonalSpeed);
+
+        Vector3 xCameraAxes = new Vector3(_camera.transform.right.x, 0, _camera.transform.right.z).normalized;
+        Vector3 ZCameraAxes = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z).normalized;
+        
+        Vector3 result = Vector3.ClampMagnitude(xCameraAxes * _horizontalAxis + ZCameraAxes * _verticalAxis, maxDiagonalSpeed);
 
         _playerVelocity.x = result.x;
         _playerVelocity.y = 0;
@@ -245,6 +260,7 @@ public class PlayerControllerV2 : MonoBehaviour
         else
         {
             gunModel.transform.SetParent(gunPosition);
+            SetParent(null);
         }
     }
 
@@ -269,6 +285,7 @@ public class PlayerControllerV2 : MonoBehaviour
                                    //$"IsLookingAtObject = {_isLookingAtMagneticObject}\n+" +
                                    "\n"+
                                    //$"Current Speed = {GetCurrentSpeed()}\n\n"+
+                                   $"Current Target Position = {_currentTargetPosition}\n"+
                                    $"Magnetic Velocity = {_magneticVelocity}\n"+
                                    $"CurrentJumpVelocity = {_jumpVelocity}\n"+
                                    $"Current Walking = {_playerVelocity}\n"+
@@ -303,6 +320,7 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         _gunVfx.SetVector3("origin", gunTipTransform.transform.position);
         _gunVfx.SetVector3("target", _currentTargetPosition);
+
         _gunVfx.Play();
     }
 
@@ -322,10 +340,13 @@ public class PlayerControllerV2 : MonoBehaviour
         }
         else
         {
-            _currentParent.transform.DetachChildren();
-            _currentParent = null;
-            _isOnPlatform = false;
-            Debug.Log("detaching");
+            if (_currentParent != null)
+            {
+                _currentParent.transform.DetachChildren();
+                _currentParent = null;
+                _isOnPlatform = false;
+                Debug.Log("detaching");
+            }
         }
     }
     
@@ -333,7 +354,12 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         if(other.gameObject.GetComponent<Magnetic>() == currentTarget)
             _isSticked = IsAttracting;
-        if (other.gameObject.TryGetComponent<MovingPlatform>(out _))
+
+        bool result = other.gameObject?.transform?.parent?.TryGetComponent<MovingPlatform>(out _) ?? false;
+        if (result == false)
+            result = other.gameObject.TryGetComponent<MovingPlatform>(out _);
+
+        if (result)
         {
             SetParent(other.gameObject);
         }
