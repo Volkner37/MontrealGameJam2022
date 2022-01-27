@@ -1,7 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
+﻿using UnityEngine.SceneManagement;
 namespace Assets.Scripts.Utils
 {
     public static class SceneLoaderUtils
