@@ -357,6 +357,12 @@ public class PlayerControllerV2 : MonoBehaviour
         }
     }
 
+    private void OnCollisionStay(Collision other)
+    {
+        if(other.gameObject.GetComponent<Magnetic>() == currentTarget)
+            _isSticked = IsAttracting;
+    }
+
     private void OnCollisionExit(Collision other)
     {
         bool result = other.gameObject?.transform?.parent?.TryGetComponent<MovingPlatform>(out _) ?? false;
