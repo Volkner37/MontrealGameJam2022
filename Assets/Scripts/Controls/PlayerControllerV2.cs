@@ -116,7 +116,6 @@ public class PlayerControllerV2 : MonoBehaviour
         if (CurrentPickup == null) return;
         
         Vector3 direction = pickupPosition.position - CurrentPickup.transform.position;
-        Debug.DrawRay(CurrentPickup.transform.position,direction, Color.red);
         CurrentPickup.GetComponent<Rigidbody>().AddForce(direction * 30, ForceMode.Force);
     }
 
@@ -191,7 +190,6 @@ public class PlayerControllerV2 : MonoBehaviour
         
         if(!pickedUpSomething && (Input.GetKeyDown(KeyCode.E) || _isTryingToRepel))
         {
-            Debug.Log("Drop");
             Drop();
         }
     }
@@ -399,7 +397,6 @@ public class PlayerControllerV2 : MonoBehaviour
             _currentParent = otherGameObject;
             transform.SetParent(_currentParent.transform);
             _isOnPlatform = true;
-            Debug.Log("attaching");
         }
         else
         {
@@ -408,7 +405,6 @@ public class PlayerControllerV2 : MonoBehaviour
                 _currentParent.transform.DetachChildren();
                 _currentParent = null;
                 _isOnPlatform = false;
-                Debug.Log("detaching");
             }
         }
     }
