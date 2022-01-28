@@ -36,6 +36,7 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private float attractionForceMagnet;
     [SerializeField] private AnimationCurve staticAttractionAcceleration;
     [SerializeField] private float dynamicObjectAttractionForce = 200;
+    [SerializeField] private float minimumDistanceToStick = 0.5f;
     [Header("Repulsion")]
     [SerializeField] private float repulsionForceMagnet;
     [SerializeField] private AnimationCurve staticRepulsionAcceleration;
@@ -290,7 +291,21 @@ public class PlayerControllerV2 : MonoBehaviour
     private void UpdateGrounded()
     {
         int layerMask = ~LayerMask.GetMask("Player");
-        _isGrounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out _, 1.1f, layerMask);
+        RaycastHit hit;
+        _isGrounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out hit, 1.1f, layerMask);
+        
+        //Check for moving platform
+        if (_isGrounded)
+        {
+            bool result = (hit.transform.parent != null && hit.transform.GetComponentInParent<MovingPlatform>() != null);
+            if (result == false)
+                result = hit.transform.TryGetComponent<MovingPlatform>(out _);
+
+            if (result)
+            {
+                ChangeParent(hit.transform.gameObject);
+            }
+        }
     }
 
     private void UpdateStickStatus()
@@ -416,8 +431,11 @@ public class PlayerControllerV2 : MonoBehaviour
         {
             if (magneticResult == currentTarget)
             {
-                if(currentTarget.IsStatic)
-                    _isSticked = IsAttracting;
+                if (currentTarget.IsStatic)
+                {
+                    if(_currentTargetDistance <= minimumDistanceToStick)
+                        _isSticked = IsAttracting;    
+                }
                 else
                 {
                     if (_isTryingToAttract)
@@ -428,22 +446,11 @@ public class PlayerControllerV2 : MonoBehaviour
                 }
             }
         }
-        
-        //Check for moving platform
-        bool result = other.gameObject?.transform?.parent?.TryGetComponent<MovingPlatform>(out _) ?? false;
-        if (result == false)
-            result = other.gameObject.TryGetComponent<MovingPlatform>(out _);
-
-        if (result)
-        {
-            ChangeParent(other.gameObject);
-        }
-        
     }
 
     private void OnCollisionStay(Collision other)
     {
-        if(other.gameObject.GetComponent<Magnetic>() == currentTarget)
+        if(other.gameObject.GetComponent<Magnetic>() == currentTarget && _currentTargetDistance <= minimumDistanceToStick)
             _isSticked = IsAttracting;
     }
 
