@@ -253,15 +253,7 @@ public class PlayerControllerV2 : MonoBehaviour
 
     private void SetGunLock()
     {
-        if (_isSticked)
-        {
-            gunModel.transform.SetParent(transform);
-        }
-        else
-        {
-            gunModel.transform.SetParent(gunPosition);
-            SetParent(null);
-        }
+        gunModel.transform.SetParent(_isSticked ? transform : gunPosition);
     }
 
     private void ShowDebug()
@@ -329,7 +321,7 @@ public class PlayerControllerV2 : MonoBehaviour
         _gunVfx.Stop();
     }
 
-    private void SetParent(GameObject otherGameObject)
+    private void ChangeParent(GameObject otherGameObject)
     {
         if (otherGameObject != null)
         {
@@ -361,15 +353,19 @@ public class PlayerControllerV2 : MonoBehaviour
 
         if (result)
         {
-            SetParent(other.gameObject);
+            ChangeParent(other.gameObject);
         }
     }
 
     private void OnCollisionExit(Collision other)
     {
-        if (_isOnPlatform && other.gameObject == _currentParent && other.gameObject.TryGetComponent<MovingPlatform>(out _))
+        bool result = other.gameObject?.transform?.parent?.TryGetComponent<MovingPlatform>(out _) ?? false;
+        if (result == false)
+            result = other.gameObject.TryGetComponent<MovingPlatform>(out _);
+        
+        if (_isOnPlatform && other.gameObject == _currentParent && result)
         {
-            SetParent(null);
+            ChangeParent(null);
         }
     }
 }
