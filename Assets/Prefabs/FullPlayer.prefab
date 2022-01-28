@@ -439,7 +439,7 @@ MonoBehaviour:
   maxRange: 5.24
   gunTipTransform: {fileID: 238509975692592903}
   gunReplacePositionSpeed: 2.5
-  pickupPosition: {fileID: 209601574576219461}
+  pickupPosition: {fileID: 4800593303914852630}
   attractionForceMagnet: 5
   staticAttractionAcceleration:
     serializedVersion: 2
@@ -474,7 +474,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  dynamicObjectAttractionForce: 50
+  dynamicObjectAttractionForce: 200
   repulsionForceMagnet: 5
   staticRepulsionAcceleration:
     serializedVersion: 2
@@ -500,7 +500,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  dynamicObjectRepulsionForce: 50
+  dynamicObjectRepulsionForce: 200
   pickupDistance: 2
   debugTextOutput: {fileID: 1807010957362809099}
   _currentTargetPosition: {x: 0, y: 0, z: 0}
@@ -1583,7 +1583,7 @@ Transform:
   - {fileID: 2656829993181581051}
   - {fileID: 8704221755820330132}
   - {fileID: 238509975692592903}
-  - {fileID: 209601574576219461}
+  - {fileID: 4800593303914852630}
   m_Father: {fileID: 1528296967867773449}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0.468, y: 84.539, z: -1.05}
@@ -2131,7 +2131,7 @@ Transform:
   m_Father: {fileID: 6617412002096791142}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6674526864514248910
+--- !u!1 &6668671349039712101
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2139,7 +2139,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 209601574576219461}
+  - component: {fileID: 4800593303914852630}
   m_Layer: 6
   m_Name: PickupPosition
   m_TagString: Untagged
@@ -2147,15 +2147,15 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &209601574576219461
+--- !u!4 &4800593303914852630
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6674526864514248910}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.8, y: 0.13, z: -1.7}
+  m_GameObject: {fileID: 6668671349039712101}
+  m_LocalRotation: {x: 0.000000006519258, y: -0.00000017881393, z: 0.0000000121071935, w: 1}
+  m_LocalPosition: {x: -7.799998, y: 0.13000207, z: -1.7000008}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4311680116798960949}
