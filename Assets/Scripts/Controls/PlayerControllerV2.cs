@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.VFX;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -24,7 +25,7 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private float airControlRatio = 0.3f;
 
     [Space] [Header("Gun Settings")] 
-    [Header("Shared")] 
+    [Header("Shared")]
     [SerializeField] private Transform defaultLookPosition;
     [SerializeField] private GameObject gunModel;
     [SerializeField] private Transform gunPosition;
@@ -43,9 +44,15 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private float dynamicObjectRepulsionForce = 200;
     [Header("Pickup")] 
     [SerializeField] private float pickupDistance = 2.0f;
+    [Header("Reticle")] 
+    [SerializeField] private Image reticleImage;
+    [SerializeField] private Color noTargetColor;
+    [SerializeField] private Gradient colorDistanceGradient;
+    
+    
     [Header("Debug")]
     [SerializeField] private TextMeshProUGUI debugTextOutput;
-
+    
     #endregion
     
     #region Velocities
@@ -110,6 +117,17 @@ public class PlayerControllerV2 : MonoBehaviour
         UpdateInputs();
         CheckForMagneticObject();
         AnimateGun();
+        UpdateReticle();
+    }
+
+    private void UpdateReticle()
+    {
+        if (_currentTargetDistance > 0 && _currentTargetDistance <= maxRange)
+            reticleImage.material.color = colorDistanceGradient.Evaluate(_currentTargetDistance / maxRange);
+        
+        Debug.Log($"{_currentTargetDistance}/{maxRange}");
+
+        //reticleImage.material.color = noTargetColor;
     }
 
     private void UpdatePickupPosition()
@@ -445,6 +463,17 @@ public class PlayerControllerV2 : MonoBehaviour
                     }
                 }
             }
+        }
+        
+        
+        //Check for moving platform
+        bool result = other.gameObject?.transform?.parent?.TryGetComponent<MovingPlatform>(out _) ?? false;
+        if (result == false)
+            result = other.gameObject.TryGetComponent<MovingPlatform>(out _);
+
+        if (result)
+        {
+            ChangeParent(other.gameObject);
         }
     }
 
