@@ -379,9 +379,9 @@ public class PlayerControllerV2 : MonoBehaviour
     
     private void PlayVFX()
     {
-        _gunVfx.SetVector3("origin", gunTipTransform.transform.position);
-        _gunVfx.SetVector3("target", _currentTargetPosition);
-
+        _gunVfx.SetVector3("Position", gunTipTransform.position);
+        _gunVfx.SetFloat("MaxDistance", _currentTargetDistance);
+        _gunVfx.SetBool("ColorBool", _isTryingToAttract);
         _gunVfx.Play();
     }
 
