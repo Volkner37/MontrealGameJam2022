@@ -428,15 +428,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allowJumping: 1
-  jumpForce: 200
-  forwardSpeed: 5
-  backwardSpeed: 5
-  sideSpeed: 5
-  airControlRatio: 0.3
+  jumpForce: 170
+  forwardSpeed: 3.8
+  backwardSpeed: 3.8
+  sideSpeed: 3.8
+  airControlRatio: 0.28
   defaultLookPosition: {fileID: 1528296968868771977}
   gunModel: {fileID: 1528296967867773448}
   gunPosition: {fileID: 1807010957390481464}
-  maxRange: 5
+  maxRange: 5.24
   gunTipTransform: {fileID: 238509975692592903}
   gunReplacePositionSpeed: 2.5
   attractionForceMagnet: 5
@@ -473,36 +473,27 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  repulsionForceMagnet: 10
+  repulsionForceMagnet: 5
   staticRepulsionAcceleration:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: -0.14258824
-      outSlope: -0.14258824
-      tangentMode: 34
+      time: -0.000046569854
+      value: 7.9662647
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0
     - serializedVersion: 3
-      time: 0.19702214
-      value: 0.97190696
-      inSlope: -0.085190445
-      outSlope: -0.085190445
-      tangentMode: 34
+      time: 0.014204654
+      value: 0.74465644
+      inSlope: -0.9123173
+      outSlope: -0.9123173
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.0023804
-      value: 0.9495239
-      inSlope: -0.027792644
-      outSlope: -0.027792644
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.78725517
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
