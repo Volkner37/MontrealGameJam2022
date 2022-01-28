@@ -31,13 +31,17 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private float maxRange;
     [SerializeField] private Transform gunTipTransform;
     [SerializeField] private float gunReplacePositionSpeed = 0.5f;
+    [SerializeField] private Transform pickupPosition;
     [Header("Attraction")]
     [SerializeField] private float attractionForceMagnet;
     [SerializeField] private AnimationCurve staticAttractionAcceleration;
+    [SerializeField] private float dynamicObjectAttractionForce = 200;
     [Header("Repulsion")]
     [SerializeField] private float repulsionForceMagnet;
     [SerializeField] private AnimationCurve staticRepulsionAcceleration;
-    
+    [SerializeField] private float dynamicObjectRepulsionForce = 200;
+    [Header("Pickup")] 
+    [SerializeField] private float pickupDistance = 2.0f;
     [Header("Debug")]
     [SerializeField] private TextMeshProUGUI debugTextOutput;
 
@@ -59,8 +63,8 @@ public class PlayerControllerV2 : MonoBehaviour
     #region Gun
     private bool _repelLocked = false; 
     private bool _attractLocked = false;
-    private bool IsAttracting => _isTryingToAttract && IsLookingAtMagneticObject;
-    private bool IsRepelling => _isTryingToRepel && IsLookingAtMagneticObject;
+    private bool IsAttracting => _isTryingToAttract && IsLookingAtMagneticObject && CurrentPickup == null;
+    private bool IsRepelling => _isTryingToRepel && IsLookingAtMagneticObject && CurrentPickup == null;
     private bool IsUsingGun => (IsRepelling || IsAttracting);
     #endregion
     
@@ -77,6 +81,7 @@ public class PlayerControllerV2 : MonoBehaviour
     private float _currentTargetDistance;
     public Vector3 _currentTargetPosition = Vector3.zero;
     public Magnetic currentTarget = null;
+    public GameObject CurrentPickup => pickupPosition.childCount == 0 ? null : pickupPosition.GetChild(0)?.gameObject;
     #endregion
     
     #region Others
@@ -104,6 +109,15 @@ public class PlayerControllerV2 : MonoBehaviour
         UpdateInputs();
         CheckForMagneticObject();
         AnimateGun();
+    }
+
+    private void UpdatePickupPosition()
+    {
+        if (CurrentPickup == null) return;
+        
+        Vector3 direction = pickupPosition.position - CurrentPickup.transform.position;
+        Debug.DrawRay(CurrentPickup.transform.position,direction, Color.red);
+        CurrentPickup.GetComponent<Rigidbody>().AddForce(direction * 30, ForceMode.Force);
     }
 
     private void AnimateGun()
@@ -164,6 +178,40 @@ public class PlayerControllerV2 : MonoBehaviour
         {
             _needJumping = Input.GetKeyDown(KeyCode.Space);
         }
+
+        bool pickedUpSomething = false;
+        if (Input.GetKeyDown(KeyCode.E) || _isTryingToAttract)
+        {
+            if (_currentTargetDistance <= pickupDistance && currentTarget != null && !currentTarget.IsStatic && pickupPosition.childCount == 0)
+            {
+                pickedUpSomething = true;
+                PickUp();
+            }
+        }
+        
+        if(!pickedUpSomething && (Input.GetKeyDown(KeyCode.E) || _isTryingToRepel))
+        {
+            Debug.Log("Drop");
+            Drop();
+        }
+    }
+
+    private void Drop()
+    {
+        if (pickupPosition.childCount <= 0) return;
+        
+        Rigidbody objRigidBody = pickupPosition.GetChild(0).GetComponent<Rigidbody>();
+        objRigidBody.useGravity = true;
+        objRigidBody.drag = 0;
+        pickupPosition.transform.DetachChildren();
+    }
+
+    private void PickUp()
+    {
+        currentTarget.transform.SetParent(pickupPosition);
+        Rigidbody objRigidBody = pickupPosition.GetChild(0).GetComponent<Rigidbody>();
+        objRigidBody.useGravity = false;    
+        objRigidBody.drag = 15;
     }
 
     private void FixedUpdate()
@@ -171,8 +219,9 @@ public class PlayerControllerV2 : MonoBehaviour
         UpdateGrounded();
         UpdateInputDirection();
         UpdateStickStatus();
+        UpdatePickupPosition();
         SetGunLock();
-        
+
         //Check for jump
         if (_needJumping)
         {
@@ -271,8 +320,11 @@ public class PlayerControllerV2 : MonoBehaviour
                                    //$"AttractLock{ _attractLocked}\n" +
                                    $"IsRepelling = {IsRepelling}\n" +
                                    $"IsTryingToRepel = {_isTryingToRepel}\n" +
-                                   $"IsLookingAtMagneticObject = {IsLookingAtMagneticObject}\n" +
+                                   $"IsLookingAtMagneticObject = {IsLookingAtMagneticObject}\n\n" +
                                    //$"RepelLock{ _repelLocked}\n" +
+                                   $"CurrentTarget = {currentTarget?.name ?? "None"}\n" +
+                                   $"Target Distance = {_currentTargetDistance}\n" +
+                                   $"Pickup = {CurrentPickup?.name ?? "None"}\n" +
                                    "\n"+
                                    //$"IsLookingAtObject = {_isLookingAtMagneticObject}\n+" +
                                    "\n"+
@@ -291,20 +343,39 @@ public class PlayerControllerV2 : MonoBehaviour
         
         if (IsLookingAtMagneticObject && ((_isTryingToAttract && !_attractLocked) || (_isTryingToRepel && !_repelLocked)))
         {
-            if (!currentTarget.IsStatic) return;
-            
-            if (IsRepelling)
+            if (currentTarget.IsStatic)
             {
-                float force = staticRepulsionAcceleration.Evaluate(_currentTargetDistance / maxRange);
-                _magneticVelocity = -_camera.transform.forward * (force * repulsionForceMagnet);
-            }
-            else if (IsAttracting)
-            {
-                float force = staticAttractionAcceleration.Evaluate(_currentTargetDistance / maxRange);
-                _magneticVelocity = _camera.transform.forward * (force * attractionForceMagnet);
-            }
+                if (IsRepelling)
+                {
+                    float force = staticRepulsionAcceleration.Evaluate(_currentTargetDistance / maxRange);
+                    _magneticVelocity = -_camera.transform.forward * (force * repulsionForceMagnet);
+                }
+                else if (IsAttracting)
+                {
+                    float force = staticAttractionAcceleration.Evaluate(_currentTargetDistance / maxRange);
+                    _magneticVelocity = _camera.transform.forward * (force * attractionForceMagnet);
+                }
             
-            _rigidbody.AddForce(_magneticVelocity);
+                _rigidbody.AddForce(_magneticVelocity);
+            }
+            else
+            {
+                
+                Vector3 direction = (transform.position - currentTarget.transform.position).normalized;
+                float force;
+                
+                if (IsRepelling)
+                {
+                    force = staticRepulsionAcceleration.Evaluate(_currentTargetDistance / maxRange) * dynamicObjectRepulsionForce;
+                    direction *= -1;
+                }
+                else //Attracting
+                {
+                    force = staticAttractionAcceleration.Evaluate(_currentTargetDistance / maxRange) * dynamicObjectAttractionForce;
+                }
+                
+                currentTarget.GetComponent<Rigidbody>().AddForce(direction * force);
+            }
         }
     }
     
@@ -344,9 +415,25 @@ public class PlayerControllerV2 : MonoBehaviour
     
     private void OnCollisionEnter(Collision other)
     {
-        if(other.gameObject.GetComponent<Magnetic>() == currentTarget)
-            _isSticked = IsAttracting;
-
+        //Check for stick or pickup
+        if (other.gameObject.TryGetComponent(out Magnetic magneticResult))
+        {
+            if (magneticResult == currentTarget)
+            {
+                if(currentTarget.IsStatic)
+                    _isSticked = IsAttracting;
+                else
+                {
+                    if (_isTryingToAttract)
+                    {
+                        PickUp();
+                        _rigidbody.velocity = Vector3.zero;
+                    }
+                }
+            }
+        }
+        
+        //Check for moving platform
         bool result = other.gameObject?.transform?.parent?.TryGetComponent<MovingPlatform>(out _) ?? false;
         if (result == false)
             result = other.gameObject.TryGetComponent<MovingPlatform>(out _);
@@ -355,6 +442,7 @@ public class PlayerControllerV2 : MonoBehaviour
         {
             ChangeParent(other.gameObject);
         }
+        
     }
 
     private void OnCollisionStay(Collision other)
