@@ -503,12 +503,12 @@ MonoBehaviour:
   dynamicObjectRepulsionForce: 200
   pickupDistance: 2
   reticleImage: {fileID: 95187396}
-  noTargetColor: {r: 0, g: 0, b: 0, a: 0}
+  noTargetColor: {r: 1, g: 1, b: 1, a: 0.57254905}
   colorDistanceGradient:
     serializedVersion: 2
-    key0: {r: 1, g: 0.027672686, b: 0, a: 1}
-    key1: {r: 0.10779405, g: 1, b: 0, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
+    key0: {r: 0.26157403, g: 1, b: 0, a: 1}
+    key1: {r: 0.9843137, g: 0.77303237, b: 0, a: 1}
+    key2: {r: 0.10779405, g: 1, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
@@ -516,7 +516,7 @@ MonoBehaviour:
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
     ctime1: 65535
-    ctime2: 0
+    ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0

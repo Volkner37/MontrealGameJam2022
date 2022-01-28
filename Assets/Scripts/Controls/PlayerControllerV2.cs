@@ -124,10 +124,8 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         if (_currentTargetDistance > 0 && _currentTargetDistance <= maxRange)
             reticleImage.material.color = colorDistanceGradient.Evaluate(_currentTargetDistance / maxRange);
-        
-        Debug.Log($"{_currentTargetDistance}/{maxRange}");
-
-        //reticleImage.material.color = noTargetColor;
+        else
+            reticleImage.material.color = noTargetColor;
     }
 
     private void UpdatePickupPosition()
