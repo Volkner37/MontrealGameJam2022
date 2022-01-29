@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,6 +7,7 @@ namespace Assets.Scripts.Utils
 {
     public static class SceneLoaderUtils
     {
+        const int MaxLevelNumber = 0;
 
         public static void LoadScene(string sceneName)
         {
@@ -26,8 +28,12 @@ namespace Assets.Scripts.Utils
             //Scene below 10 need a 0 before their number. (Exemple : Level_02)
             if (newNumber < 10)
                 result = "0" + newNumber;
+
+            string nextScene = values[0] + "_" + result;
             
-            LoadScene(values[0] + "_" + result);
+            int sceneIndex = SceneUtility.GetBuildIndexByScenePath($"Assets/Scenes/FINAL/Levels/{nextScene}.unity");
+            
+            LoadScene(sceneIndex >= 0 ? nextScene : "MainMenu");
         }
     }
 }

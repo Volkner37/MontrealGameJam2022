@@ -99,9 +99,6 @@ public class PlayerControllerV2 : MonoBehaviour
             if (value && _isGrounded != true && _rigidbody.velocity.y <= -1)
             {
                 jumpSoundSource.volume = Mathf.Clamp((_rigidbody.velocity.y + 1) / -10, 0, 1);
-                Debug.Log(jumpSoundSource.volume);
-
-                //TODO : Change volume depending of velocity of player.
                 jumpSoundSource.PlayOneShot(IsGroundedOnMetal ? metalLandingSound : normalLandingSound);
             }
             
@@ -395,12 +392,14 @@ public class PlayerControllerV2 : MonoBehaviour
 
     private void UpdateInputDirection()
     {
+        _playerVelocity = Vector3.zero;
+
         //Accelerations
         if (_verticalAxis >= 0)
             _verticalAxis *= forwardSpeed;
         else if (_verticalAxis <= 0)
             _verticalAxis *= backwardSpeed;
-    
+        
         _horizontalAxis *= sideSpeed;
 
         if (!IsGrounded)
@@ -415,9 +414,19 @@ public class PlayerControllerV2 : MonoBehaviour
 
         Vector3 xCameraAxes = new Vector3(_camera.transform.right.x, 0, _camera.transform.right.z).normalized;
         Vector3 ZCameraAxes = new Vector3(_camera.transform.forward.x, 0, _camera.transform.forward.z).normalized;
+
+        //Edge case of when looking up of down
+        if (ZCameraAxes == Vector3.zero)
+        {
+            ZCameraAxes = _camera.transform.up * -1;
+
+            if (_camera.transform.forward.normalized == Vector3.down)
+                ZCameraAxes *= -1;
+        }
         
         Vector3 result = Vector3.ClampMagnitude(xCameraAxes * _horizontalAxis + ZCameraAxes * _verticalAxis, maxDiagonalSpeed);
-
+        
+        
         _playerVelocity.x = result.x;
         _playerVelocity.y = 0;
         _playerVelocity.z = result.z;
