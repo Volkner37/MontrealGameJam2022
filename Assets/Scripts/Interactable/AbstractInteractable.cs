@@ -6,12 +6,12 @@ public abstract class AbstractInteractable : MonoBehaviour
 {
     [SerializeField] private AbstractInteractable next = null;
 
-    public void Interact()
+    public void Interact(bool active)
     {
-        HandleInteraction();
+        HandleInteraction(active);
         if (next)
-            next.Interact();
+            next.Interact(active);
     }
 
-    protected abstract void HandleInteraction();
+    protected abstract void HandleInteraction(bool active);
 }

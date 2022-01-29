@@ -14,6 +14,13 @@ public class InteractOnCollision : MonoBehaviour
         if (collidesWith.Count != 0 && !collidesWith.Contains(other.gameObject))
             return;
 
-        interactable.Interact();
+        interactable.Interact(true);
+    }
+
+    private void OnCollisionExit(Collision other) {
+        if (collidesWith.Count != 0 && !collidesWith.Contains(other.gameObject))
+            return;
+
+        interactable.Interact(false);
     }
 }

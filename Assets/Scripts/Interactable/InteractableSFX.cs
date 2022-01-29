@@ -6,14 +6,21 @@ using UnityEngine;
 public class InteractableSFX : AbstractInteractable
 {
     private AudioSource _audioSource;
+    private bool _active = false;
 
     void Start()
     {
         _audioSource = GetComponent<AudioSource>();
     }
 
-    protected override void HandleInteraction()
+    protected override void HandleInteraction(bool active)
     {
-        _audioSource.Play();        
+        if (active == _active)
+            return;
+
+        if (active)
+            _audioSource.Play();
+        else
+            _audioSource.Stop();
     }
 }
