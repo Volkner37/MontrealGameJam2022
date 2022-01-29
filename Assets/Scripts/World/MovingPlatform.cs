@@ -116,7 +116,6 @@ public class MovingPlatform : MonoBehaviour
     }
 
     // Editor
-
     void OnDrawGizmos()
     {
         if (!WaypointsLocked)

@@ -12,6 +12,12 @@ public class PlayerControllerV2 : MonoBehaviour
     #region Options
 
     [Header("Global")]
+    [SerializeField] private AudioSource walkingSoundSource;
+    [SerializeField] private AudioClip walkingSound;
+    [SerializeField] private AudioSource jumpSoundSource;
+    [SerializeField] private AudioClip jumpingSound;
+    [SerializeField] private AudioClip normalLandingSound;
+    [SerializeField] private AudioClip metalLandingSound;
 
     [Header("Jump")] 
     [SerializeField] private bool allowJumping = true;
@@ -23,9 +29,12 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private float backwardSpeed = 10;
     [SerializeField] private float sideSpeed = 10;
     [SerializeField] private float airControlRatio = 0.3f;
-
+    
     [Space] [Header("Gun Settings")] 
     [Header("Shared")]
+    [SerializeField] private AudioSource gunSoundSource;
+    [SerializeField] private AudioSource impactSource;
+    [SerializeField] private AudioClip impactSound;
     [SerializeField] private Transform defaultLookPosition;
     [SerializeField] private GameObject gunModel;
     [SerializeField] private Transform gunPosition;
@@ -38,7 +47,9 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private AnimationCurve staticAttractionAcceleration;
     [SerializeField] private float dynamicObjectAttractionForce = 200;
     [SerializeField] private float minimumDistanceToStick = 0.5f;
+    [SerializeField] private AudioClip attractSound;
     [Header("Repulsion")]
+    [SerializeField] private AudioClip repulseSound;
     [SerializeField] private float repulsionForceMagnet;
     [SerializeField] private AnimationCurve staticRepulsionAcceleration;
     [SerializeField] private float dynamicObjectRepulsionForce = 200;
@@ -48,8 +59,7 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private Image reticleImage;
     [SerializeField] private Color noTargetColor;
     [SerializeField] private Gradient colorDistanceGradient;
-    
-    
+
     [Header("Debug")]
     [SerializeField] private TextMeshProUGUI debugTextOutput;
     
@@ -77,11 +87,41 @@ public class PlayerControllerV2 : MonoBehaviour
     #endregion
     
     #region States
+    private bool IsGroundedOnMetal = false;
     private bool _isGrounded;
+    private bool IsGrounded
+    {
+        get => _isGrounded;
+        set
+        {
+            if (value && _isGrounded != true)
+            {
+                //TODO : Change volume depending of velocity of player.
+                jumpSoundSource.PlayOneShot(IsGroundedOnMetal ? metalLandingSound : normalLandingSound);
+            }
+            
+            _isGrounded = value;
+        }
+    }
+    
     private bool _needJumping;
     private bool _isJumping;
     private bool _isSticked;
+    private bool IsSticked
+    {
+        get => _isSticked;
+        set
+        {
+            if (value && _isSticked != true)
+            {
+                impactSource.PlayOneShot(impactSound);
+            }
+
+            _isSticked = value; 
+        }
+    }
     private bool _isOnPlatform;
+    
     #endregion
 
     #region Target
@@ -90,6 +130,9 @@ public class PlayerControllerV2 : MonoBehaviour
     public Vector3 _currentTargetPosition = Vector3.zero;
     public Magnetic currentTarget = null;
     public GameObject CurrentPickup => pickupPosition.childCount == 0 ? null : pickupPosition.GetChild(0)?.gameObject;
+
+    
+
     #endregion
     
     #region Others
@@ -109,6 +152,14 @@ public class PlayerControllerV2 : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _gunVfx = GetComponentInChildren<VisualEffect>();
         _gunVfx.enabled = true;
+        
+        //Sounds
+        walkingSoundSource.clip = walkingSound;
+        walkingSoundSource.loop = true;
+        jumpSoundSource.clip = jumpingSound;
+        jumpSoundSource.loop = false;
+        gunSoundSource.loop = true;
+        
     }
 
     // Update is called once per frame
@@ -118,6 +169,27 @@ public class PlayerControllerV2 : MonoBehaviour
         CheckForMagneticObject();
         AnimateGun();
         UpdateReticle();
+        PlayGunSound();
+    }
+
+    private void PlayGunSound()
+    {
+        if (!IsUsingGun)
+        {
+            gunSoundSource.Pause();
+        }
+        else if (IsAttracting)
+        {
+            gunSoundSource.clip = attractSound;
+            if(!gunSoundSource.isPlaying)
+                gunSoundSource.Play();
+        }
+        else if (IsRepelling)
+        {
+            gunSoundSource.clip = repulseSound;
+            if(!gunSoundSource.isPlaying)
+                gunSoundSource.Play();
+        }
     }
 
     private void UpdateReticle()
@@ -138,7 +210,7 @@ public class PlayerControllerV2 : MonoBehaviour
 
     private void AnimateGun()
     {
-        if (!_isSticked)
+        if (!IsSticked)
         {
             gunModel.transform.localPosition = Vector3.Slerp(gunModel.transform.localPosition, Vector3.zero, gunReplacePositionSpeed * Time.deltaTime);
             gunModel.transform.localRotation = Quaternion.Slerp(gunModel.transform.localRotation,Quaternion.identity, gunReplacePositionSpeed * Time.deltaTime);
@@ -184,13 +256,13 @@ public class PlayerControllerV2 : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             _isTryingToAttract = false;
-            _isSticked = false;
+            IsSticked = false;
         }
         if (Input.GetMouseButtonUp(1))
         {
             _isTryingToRepel = false;
         }
-        if (allowJumping && !_needJumping && _isGrounded)
+        if (allowJumping && !_needJumping && IsGrounded)
         {
             _needJumping = Input.GetKeyDown(KeyCode.Space);
         }
@@ -242,12 +314,14 @@ public class PlayerControllerV2 : MonoBehaviour
         {
             _needJumping = false;
             _rigidbody.AddForce(transform.up * jumpForce);
+            if(jumpingSound != null)
+                jumpSoundSource.PlayOneShot(jumpingSound);
         }
 
         if (IsUsingGun)
         {
             UpdateMagnetGunEffect();
-            if(!_isSticked)
+            if(!IsSticked)
                 PlayVFX();
         }
         else
@@ -270,7 +344,18 @@ public class PlayerControllerV2 : MonoBehaviour
         velocity.y = _rigidbody.velocity.y;
 
         _rigidbody.velocity = velocity;
-        
+
+        if (!walkingSoundSource.isPlaying && !IsUsingGun && _playerVelocity != Vector3.zero && IsGrounded)
+        {
+            walkingSoundSource.Play();
+            Debug.Log("Play");
+        }
+        else if(walkingSoundSource.isPlaying && ((_playerVelocity == Vector3.zero && IsGrounded) || IsUsingGun))
+        {
+            walkingSoundSource.Pause();
+            Debug.Log("Pause");
+        }
+
         ShowDebug();
     }
 
@@ -284,7 +369,7 @@ public class PlayerControllerV2 : MonoBehaviour
     
         _horizontalAxis *= sideSpeed;
 
-        if (!_isGrounded)
+        if (!IsGrounded)
         {
             _verticalAxis *= airControlRatio;
             _horizontalAxis *= airControlRatio;
@@ -308,27 +393,34 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         int layerMask = ~LayerMask.GetMask("Player");
         RaycastHit hit;
-        _isGrounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out hit, 1.1f, layerMask);
+        bool grounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out hit, 1.1f, layerMask);
         
         //Check for moving platform
-        if (_isGrounded)
+        if (grounded)
         {
             bool result = (hit.transform.parent != null && hit.transform.GetComponentInParent<MovingPlatform>() != null);
             if (result == false)
                 result = hit.transform.TryGetComponent<MovingPlatform>(out _);
 
             ChangeParent(result ? hit.transform.gameObject : null);
+            IsGroundedOnMetal = hit.transform.TryGetComponent<Magnetic>(out _);
         }
+        else
+        {
+            IsGroundedOnMetal = false;
+        }
+
+        IsGrounded = grounded;
     }
 
     private void UpdateStickStatus()
     {
-        _rigidbody.constraints = _isSticked ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        _rigidbody.constraints = IsSticked ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
     private void SetGunLock()
     {
-        gunModel.transform.SetParent(_isSticked ? transform : gunPosition);
+        gunModel.transform.SetParent(IsSticked ? transform : gunPosition);
     }
 
     private void ShowDebug()
@@ -337,7 +429,8 @@ public class PlayerControllerV2 : MonoBehaviour
 
         if (debugTextOutput != null)
         {
-            debugTextOutput.text = $"IsGrounded ={_isGrounded}\n" +
+            debugTextOutput.text = $"IsGrounded ={IsGrounded}\n" +
+                                   $"IsGroundedOnMetal ={IsGroundedOnMetal}\n" +
                                    $"IsJumping ={_needJumping}\n" +
                                    "\n" +
                                    $"IsUsingGun ={IsUsingGun}\n" +
@@ -447,7 +540,7 @@ public class PlayerControllerV2 : MonoBehaviour
                 if (currentTarget.IsStatic)
                 {
                     if(_currentTargetDistance <= minimumDistanceToStick)
-                        _isSticked = IsAttracting;    
+                        IsSticked = IsAttracting;    
                 }
                 else
                 {
@@ -475,7 +568,7 @@ public class PlayerControllerV2 : MonoBehaviour
     private void OnCollisionStay(Collision other)
     {
         if(other.gameObject.GetComponent<Magnetic>() == currentTarget && _currentTargetDistance <= minimumDistanceToStick)
-            _isSticked = IsAttracting;
+            IsSticked = IsAttracting;
     }
 
     private void OnCollisionExit(Collision other)
