@@ -31,8 +31,8 @@ public class ObjectiveMarker : MonoBehaviour
         m_baseObjectiveMarkerColor = m_objectiveMarker.color;
         m_baseDistanceDisplayColor = m_distanceDisplay.color;
 
-        /*m_objectiveMarker.color = new Color( 0, 0, 0, 0 );
-        m_distanceDisplay.color = new Color( 0, 0, 0, 0 );*/
+        m_objectiveMarker.color = new Color( 0, 0, 0, 0 );
+        m_distanceDisplay.color = new Color( 0, 0, 0, 0 );
 
         SetObjective( GameObject.Find( "CheesePrefab" ).transform );
     }
@@ -75,21 +75,53 @@ public class ObjectiveMarker : MonoBehaviour
             m_minY = m_objectiveMarker.GetPixelAdjustedRect().height / 2;
             m_maxY = Screen.height - m_minY;
 
-            Vector2 pos = Camera.main.WorldToScreenPoint( m_objective.position );
+            Vector3 pos = Camera.main.WorldToScreenPoint( m_objective.position );
 
-            if( Vector3.Dot( ( m_objective.position - transform.position ), transform.forward ) < 0 )
+            if( !IsObjectiveInViewport( m_objective.position ) )
             {
-                if( pos.x < Screen.width / 2 )
-                    pos.x = m_maxX;
-                else
-                    pos.x = m_minX;
-            }
+                // Flipping if the objective is behind us
+                if( pos.z < 0 )
+                {
+                    pos *= -1;
+                }
 
-            Debug.Log( pos.y );
+                Vector3 screenCenter = new Vector3( Screen.width, Screen.height, 0 ) / 2;
+
+                pos -= screenCenter;
+
+                float angle = Mathf.Atan2( pos.y, pos.x );
+                angle -= 90 * Mathf.Deg2Rad;
+
+                float cos = Mathf.Cos( angle );
+                float sin = -Mathf.Sin( angle );
+
+                pos = screenCenter + new Vector3( sin, cos, 0 );
+
+                float m = cos / sin;
+
+                if( cos > 0 )
+                {
+                    pos = new Vector3( screenCenter.y / m, screenCenter.y, 0 );
+                }
+                else
+                {
+                    pos = new Vector3( -screenCenter.y / m, -screenCenter.y, 0 );
+                }
+
+                if( pos.x > screenCenter.x )
+                {
+                    pos = new Vector3( screenCenter.x, screenCenter.x * m, 0 );
+                }
+                else if( pos.x < -screenCenter.x )
+                {
+                    pos = new Vector3( -screenCenter.x, -screenCenter.x * m, 0 );
+                }
+
+                pos += screenCenter;
+            }
 
             pos.x = Mathf.Clamp( pos.x, m_minX, m_maxX );
             pos.y = Mathf.Clamp( pos.y, m_minY, m_maxY );
-
             m_objectiveMarker.transform.position = pos;
 
             m_distanceDisplay.text = ConvertUtils.ConvertDistanceToReadableValue( m_objective.position, transform.position );
@@ -102,5 +134,11 @@ public class ObjectiveMarker : MonoBehaviour
                 FadeOutObjectiveMarker();
             }
         }
+    }
+
+    private bool IsObjectiveInViewport( Vector3 pos )
+    {
+        Vector3 testedPos = Camera.main.WorldToViewportPoint( pos );
+        return ( testedPos.x > 0 && testedPos.x < 1 ) && ( testedPos.y > 0 && testedPos.y < 1 ) && testedPos.z > 0;
     }
 }
