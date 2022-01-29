@@ -11,6 +11,8 @@ public class MovingPlatform : MonoBehaviour
     private float pauseDuration = 1.0f;
     [SerializeField]
     private AnimationCurve movementCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
+    [SerializeField]
+    private float audioRampUpDownTime = 0.5f;
 
     [Header("")]
     [HideInInspector]
@@ -37,6 +39,8 @@ public class MovingPlatform : MonoBehaviour
     [SerializeField]
     private Vector3[] waypoints = new Vector3[2];
 
+
+    private AudioSource _audioSource;
     private int sourceWaypoint;
     private int destWaypoint;
     private float currentDuration;
@@ -62,16 +66,19 @@ public class MovingPlatform : MonoBehaviour
                 ")", gameObject);
         }
 
+        GameObject audioSourcePrefab = (GameObject)Resources.Load("Prefabs/PlatformAudioSource", typeof(GameObject));
+        GameObject audioSourceGO = Instantiate(audioSourcePrefab);
+        audioSourceGO.transform.parent = transform;
+        _audioSource = audioSourceGO.GetComponent<AudioSource>();
+
         sourceWaypoint = 0;
         destWaypoint = 1;
-
-        currentDuration = 0f;
-        currentState = PlatformState.Moving;
-
         // transform to world space if needed
         UseRelativeWaypoints(false);
 
         transform.position = waypoints[sourceWaypoint];
+        currentDuration = 0f;
+        StartMoving();
     }
 
     void FixedUpdate()
@@ -89,11 +96,29 @@ public class MovingPlatform : MonoBehaviour
         }
     }
 
+    void StartMoving()
+    {
+        _audioSource.Play();
+        currentState = PlatformState.Moving;
+    }
+
     void DoMove()
     {
         float ratio = Mathf.Min(currentDuration, pointToPointDuration) / pointToPointDuration;
+
         ratio = movementCurve.Evaluate(ratio);
         transform.position = Vector3.Lerp(waypoints[sourceWaypoint], waypoints[destWaypoint], ratio);
+
+        float remaining = pointToPointDuration - currentDuration;
+        if (currentDuration <= audioRampUpDownTime || remaining <= audioRampUpDownTime)
+        {
+            ratio = Mathf.Min(currentDuration, remaining) / audioRampUpDownTime;
+            _audioSource.volume = ratio;
+        }
+        else
+        {
+            _audioSource.volume = 1.0f;
+        }
 
         if (currentDuration >= pointToPointDuration) {
             currentDuration -= pointToPointDuration;
@@ -103,15 +128,22 @@ public class MovingPlatform : MonoBehaviour
             sourceWaypoint = destWaypoint;
             destWaypoint = tempWaypoint;
 
-            currentState = PlatformState.Paused;
+            StopMoving();
         }
+    }
+
+    void StopMoving()
+    {
+        _audioSource.Stop();
+        currentState = PlatformState.Paused;
     }
 
     void DoPause()
     {
         if (currentDuration >= pauseDuration) {
             currentDuration -= pauseDuration;
-            currentState = PlatformState.Moving;
+
+            StartMoving();
         }
     }
 
