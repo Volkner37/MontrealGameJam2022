@@ -67,7 +67,7 @@ public class ObjectiveMarker : MonoBehaviour
             m_timeRemainingOnDisplay = m_displayTime;
         }
 
-        if( true )
+        if( m_isDisplayed )
         {
             m_minX = m_objectiveMarker.GetPixelAdjustedRect().width / 2;
             m_maxX = Screen.width - m_minX;
