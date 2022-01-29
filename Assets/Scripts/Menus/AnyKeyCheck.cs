@@ -6,6 +6,12 @@ public class AnyKeyCheck : MonoBehaviour
 {
     [SerializeField] private GameObject mainMenu;
     
+    private void Awake()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;    
+    }
+    
     // Update is called once per frame
     void Update()
     {
