@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingPlatform : MonoBehaviour
+public class MovingPlatform : AbstractInteractable
 {
     [Header("Movement Tuning")]
     [SerializeField]
     private float pointToPointDuration = 4.0f;
     [SerializeField]
     private float pauseDuration = 1.0f;
+    [SerializeField]
+    private bool onAtStart = true;
     [SerializeField]
     private AnimationCurve movementCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
     [SerializeField]
@@ -46,10 +48,12 @@ public class MovingPlatform : MonoBehaviour
     private float currentDuration;
 
     private enum PlatformState {
+        Off,
         Moving,
         Paused,
     };
-    private PlatformState currentState;
+    private PlatformState currentState = PlatformState.Off;
+    private PlatformState previousState = PlatformState.Moving;
 
     // Start is called before the first frame update
     void Start()
@@ -79,32 +83,67 @@ public class MovingPlatform : MonoBehaviour
 
         transform.position = waypoints[sourceWaypoint];
         currentDuration = 0f;
-        StartMoving();
+
+        if (onAtStart)
+            Resume();
     }
 
     void FixedUpdate()
     {
-        currentDuration += Time.deltaTime;
-
         switch (currentState)
         {
+            case PlatformState.Off:
+                OffState();
+                break;
             case PlatformState.Moving:
-                DoMove();
+                MovingState();
                 break;
             case PlatformState.Paused:
-                DoPause();
+                PausedState();
                 break;
         }
     }
 
-    void StartMoving()
+    // State transitions
+    void Resume()
     {
-        _audioSource.Play();
+        _audioSource.Play(); // restarts clip
         currentState = PlatformState.Moving;
     }
 
-    void DoMove()
+    void Pause()
     {
+        currentState = PlatformState.Paused;
+    }
+
+    void TurnOff()
+    {
+        if (currentState == PlatformState.Off)
+            return;
+
+        Debug.Log("TurnOff: " + previousState);
+        previousState = currentState;
+        currentState = PlatformState.Off;
+    }
+
+    void TurnOn()
+    {
+        if (currentState != PlatformState.Off)
+            return;
+
+        Debug.Log("TurnOn: " + previousState);
+        currentState = previousState;
+        previousState = PlatformState.Off;
+    }
+
+    // States
+
+    void OffState() {}
+
+    void MovingState()
+    {
+        currentDuration += Time.deltaTime;
+
         float ratio = Mathf.Min(currentDuration, pointToPointDuration) / pointToPointDuration;
 
         ratio = movementCurve.Evaluate(ratio);
@@ -114,7 +153,7 @@ public class MovingPlatform : MonoBehaviour
         if (currentDuration <= audioRampUpDownTime || remaining <= audioRampUpDownTime)
         {
             ratio = Mathf.Min(currentDuration, remaining) / audioRampUpDownTime;
-            _audioSource.volume = ratio;
+            _audioSource.volume = Mathf.Max(0, ratio);
         }
         else
         {
@@ -129,23 +168,32 @@ public class MovingPlatform : MonoBehaviour
             sourceWaypoint = destWaypoint;
             destWaypoint = tempWaypoint;
 
-            StopMoving();
+            Pause();
         }
     }
 
-    void StopMoving()
+    void PausedState()
     {
-        _audioSource.Stop();
-        currentState = PlatformState.Paused;
-    }
+        currentDuration += Time.deltaTime;
 
-    void DoPause()
-    {
         if (currentDuration >= pauseDuration) {
             currentDuration -= pauseDuration;
 
-            StartMoving();
+            Resume();
         }
+    }
+
+    // Interactable
+
+    protected override void HandleInteraction(bool active)
+    {
+        // onAtStart=true  : active=true -> TurnOff, active=false -> TurnOn
+        // onAtStart=false : active=true -> TurnOn,  active=false -> TurnOff
+        bool turnOff = onAtStart == active;
+        if (turnOff)
+            TurnOff();
+        else
+            TurnOn();
     }
 
     // Editor
