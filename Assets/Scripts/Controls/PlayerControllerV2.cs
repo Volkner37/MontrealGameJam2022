@@ -94,8 +94,11 @@ public class PlayerControllerV2 : MonoBehaviour
         get => _isGrounded;
         set
         {
-            if (value && _isGrounded != true)
+            if (value && _isGrounded != true && _rigidbody.velocity.y <= -1)
             {
+                jumpSoundSource.volume = Mathf.Clamp((_rigidbody.velocity.y + 1) / -10, 0, 1);
+                Debug.Log(jumpSoundSource.volume);
+
                 //TODO : Change volume depending of velocity of player.
                 jumpSoundSource.PlayOneShot(IsGroundedOnMetal ? metalLandingSound : normalLandingSound);
             }

@@ -431,11 +431,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkingSoundSource: {fileID: 7362022921992684965}
-  walkingSound: {fileID: 0}
+  walkingSound: {fileID: 8300000, guid: a2492575bd38bc14ab3e511b47a4509c, type: 3}
   jumpSoundSource: {fileID: 1107208652991721333}
   jumpingSound: {fileID: 0}
-  normalLandingSound: {fileID: 0}
-  metalLandingSound: {fileID: 0}
+  normalLandingSound: {fileID: 8300000, guid: 906c931788de156428fef6799a87a731, type: 3}
+  metalLandingSound: {fileID: 8300000, guid: 9443ebe84c591174595cf241db12f661, type: 3}
   allowJumping: 1
   jumpForce: 170
   forwardSpeed: 3.8
@@ -444,7 +444,7 @@ MonoBehaviour:
   airControlRatio: 0.28
   gunSoundSource: {fileID: 3753856046350158370}
   impactSource: {fileID: 312613280302568284}
-  impactSound: {fileID: 0}
+  impactSound: {fileID: 8300000, guid: fd706ac1a4161374daf450612bfc03ca, type: 3}
   defaultLookPosition: {fileID: 1528296968868771977}
   gunModel: {fileID: 1528296967867773448}
   gunPosition: {fileID: 1807010957390481464}
@@ -488,8 +488,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   dynamicObjectAttractionForce: 200
   minimumDistanceToStick: 1.05
-  attractSound: {fileID: 0}
-  repulseSound: {fileID: 0}
+  attractSound: {fileID: 8300000, guid: ee604faa18d19dd408e5b4d3edfd3393, type: 3}
+  repulseSound: {fileID: 8300000, guid: 560b0a6fa640511478584e0863bff4d5, type: 3}
   repulsionForceMagnet: 5
   staticRepulsionAcceleration:
     serializedVersion: 2
@@ -563,7 +563,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 5bf40ecb52578a14891dcab69f8e2e51, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -659,7 +659,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -755,7 +755,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -851,7 +851,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.14
   m_Pitch: 1
   Loop: 0
   Mute: 0
