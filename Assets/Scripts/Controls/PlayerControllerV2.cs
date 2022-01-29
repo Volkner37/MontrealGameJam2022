@@ -177,7 +177,7 @@ public class PlayerControllerV2 : MonoBehaviour
 
     private void PlayGunSound()
     {
-        if (!IsUsingGun)
+        if (!IsUsingGun || _isSticked)
         {
             gunSoundSource.Pause();
         }
@@ -326,6 +326,8 @@ public class PlayerControllerV2 : MonoBehaviour
             UpdateMagnetGunEffect();
             if(!IsSticked)
                 PlayVFX();
+            else
+                StopVFX();
         }
         else
         {
