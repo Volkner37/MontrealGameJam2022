@@ -50,7 +50,8 @@ public class Collectible : MonoBehaviour
             Debug.Log( "End of Level Scripting" );
             DOTween.Clear();
             cheeseVisual.SetActive(false);
-
+            GetComponent<Collider>().enabled = false;
+            
             _audioSource.PlayOneShot(winSound);
             isCollected = true;
         }

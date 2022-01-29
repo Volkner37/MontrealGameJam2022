@@ -69,6 +69,7 @@ public class MovingPlatform : MonoBehaviour
         GameObject audioSourcePrefab = (GameObject)Resources.Load("Prefabs/PlatformAudioSource", typeof(GameObject));
         GameObject audioSourceGO = Instantiate(audioSourcePrefab);
         audioSourceGO.transform.parent = transform;
+        audioSourceGO.transform.localPosition = Vector3.zero;
         _audioSource = audioSourceGO.GetComponent<AudioSource>();
 
         sourceWaypoint = 0;
