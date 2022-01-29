@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Utils;
 using UnityEngine;
 using DG.Tweening;
 
@@ -33,11 +34,13 @@ public class Collectible : MonoBehaviour
 
     private void OnTriggerEnter( Collider other )
     {
-        if( other.tag == "Player" )
+        if( other.CompareTag("Player") )
         {
             Debug.Log( "End of Level Scripting" );
             DOTween.Clear();
             gameObject.SetActive( false );
+
+            SceneLoaderUtils.LoadNextScene();
         }
     }
 }
