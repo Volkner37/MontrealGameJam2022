@@ -134,8 +134,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  audioRampUpDownTime: 0.5
   _waypointsLocked: 1
   _usingRelativeWaypoints: 1
+  _origRotation: {x: 0, y: 0, z: 0, w: 1}
   waypoints:
   - {x: 0, y: 0, z: 0}
   - {x: 18.258999, y: 0, z: 0}
