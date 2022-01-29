@@ -221,7 +221,7 @@ public class PlayerControllerV2 : MonoBehaviour
             //     gunReplacePositionSpeed * Time.deltaTime);
         }
     }
-
+    
     private void CheckForMagneticObject()
     {
         //Without this, the player could block the raycast.
@@ -348,12 +348,10 @@ public class PlayerControllerV2 : MonoBehaviour
         if (!walkingSoundSource.isPlaying && !IsUsingGun && _playerVelocity != Vector3.zero && IsGrounded)
         {
             walkingSoundSource.Play();
-            Debug.Log("Play");
         }
         else if(walkingSoundSource.isPlaying && ((_playerVelocity == Vector3.zero && IsGrounded) || IsUsingGun))
         {
             walkingSoundSource.Pause();
-            Debug.Log("Pause");
         }
 
         ShowDebug();
