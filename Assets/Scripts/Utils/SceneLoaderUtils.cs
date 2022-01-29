@@ -33,8 +33,6 @@ namespace Assets.Scripts.Utils
             
             int sceneIndex = SceneUtility.GetBuildIndexByScenePath($"Assets/Scenes/FINAL/Levels/{nextScene}.unity");
             
-            Debug.Log($"Assets/Scenes/FINAL/Levels/{nextScene}.unity" + " INDEX OF " + sceneIndex);
-
             LoadScene(sceneIndex >= 0 ? nextScene : "MainMenu");
         }
     }

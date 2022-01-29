@@ -392,8 +392,6 @@ public class PlayerControllerV2 : MonoBehaviour
 
     private void UpdateInputDirection()
     {
-        Debug.Log("allo");
-        
         _playerVelocity = Vector3.zero;
 
         //Accelerations
@@ -425,8 +423,6 @@ public class PlayerControllerV2 : MonoBehaviour
             if (_camera.transform.forward.normalized == Vector3.down)
                 ZCameraAxes *= -1;
         }
-        
-        Debug.Log(ZCameraAxes + "/" + xCameraAxes);
         
         Vector3 result = Vector3.ClampMagnitude(xCameraAxes * _horizontalAxis + ZCameraAxes * _verticalAxis, maxDiagonalSpeed);
         
