@@ -6,9 +6,13 @@ namespace Assets.Scripts.Utils
 {
     public static class SceneLoaderUtils
     {
+
         public static void LoadScene(string sceneName)
         {
-            SceneManager.LoadScene(sceneName);
+            //SceneManager.LoadScene(sceneName);
+            Debug.Log(sceneName);
+            LevelChanger _levelChanger = LevelChanger.Instance;
+            _levelChanger.FadeToLevel(sceneName);
         }
 
         public static void LoadNextScene()
