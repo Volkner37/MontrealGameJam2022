@@ -19,8 +19,6 @@ public class BouncyText : MonoBehaviour
         initialSize = text.fontSize;
     }
 
-    
-    
     // Update is called once per frame
     void Update()
     {
