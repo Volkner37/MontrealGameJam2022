@@ -11,15 +11,26 @@ public class Collectible : MonoBehaviour
     [SerializeField] private float m_secondsPerLoop;
     [SerializeField] private int m_turnsPerLoop;
     [SerializeField] private float m_upMovementOffset;
+    [SerializeField] private AudioClip winSound;
+    [SerializeField] private GameObject cheeseVisual;
 
     private GameObject m_cheeseContainer;
     private float m_baseHeight;
-
+    private bool isCollected;
+    private AudioSource _audioSource;
     private void Awake()
     {
         m_cheeseContainer = transform.Find( "CheeseContainer" ).gameObject;
-
+        _audioSource = GetComponent<AudioSource>();
         StartCoroutine( DoCollectibleAnimation() );
+    }
+
+    private void Update()
+    {
+        if (!isCollected || _audioSource.isPlaying)
+            return;
+        
+        SceneLoaderUtils.LoadNextScene();
     }
 
     private IEnumerator DoCollectibleAnimation()
@@ -38,9 +49,10 @@ public class Collectible : MonoBehaviour
         {
             Debug.Log( "End of Level Scripting" );
             DOTween.Clear();
-            gameObject.SetActive( false );
+            cheeseVisual.SetActive(false);
 
-            SceneLoaderUtils.LoadNextScene();
+            _audioSource.PlayOneShot(winSound);
+            isCollected = true;
         }
     }
 }
