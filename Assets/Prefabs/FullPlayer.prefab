@@ -446,6 +446,10 @@ MonoBehaviour:
   gunSoundSource: {fileID: 3753856046350158370}
   impactSource: {fileID: 312613280302568284}
   impactSound: {fileID: 8300000, guid: fd706ac1a4161374daf450612bfc03ca, type: 3}
+  gunSound: {fileID: 8300000, guid: 6840cd4df06291a4eb077138ec87d2fa, type: 3}
+  gunVolumeFadeRatio: 1
+  maxPitch: 2
+  minPitch: 1
   defaultLookPosition: {fileID: 1528296968868771977}
   gunModel: {fileID: 1528296967867773448}
   gunPosition: {fileID: 1807010957390481464}
@@ -489,8 +493,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   dynamicObjectAttractionForce: 200
   minimumDistanceToStick: 1.05
-  attractSound: {fileID: 8300000, guid: ee604faa18d19dd408e5b4d3edfd3393, type: 3}
-  repulseSound: {fileID: 8300000, guid: 560b0a6fa640511478584e0863bff4d5, type: 3}
   repulsionForceMagnet: 5
   staticRepulsionAcceleration:
     serializedVersion: 2

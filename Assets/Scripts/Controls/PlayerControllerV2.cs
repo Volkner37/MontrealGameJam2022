@@ -35,6 +35,10 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private AudioSource gunSoundSource;
     [SerializeField] private AudioSource impactSource;
     [SerializeField] private AudioClip impactSound;
+    [SerializeField] private AudioClip gunSound;
+    [SerializeField] private float gunVolumeFadeRatio = 1;
+    [SerializeField] private float maxPitch = 2;
+    [SerializeField] private float minPitch = 1;
     [SerializeField] private Transform defaultLookPosition;
     [SerializeField] private GameObject gunModel;
     [SerializeField] private Transform gunPosition;
@@ -47,9 +51,7 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private AnimationCurve staticAttractionAcceleration;
     [SerializeField] private float dynamicObjectAttractionForce = 200;
     [SerializeField] private float minimumDistanceToStick = 0.5f;
-    [SerializeField] private AudioClip attractSound;
     [Header("Repulsion")]
-    [SerializeField] private AudioClip repulseSound;
     [SerializeField] private float repulsionForceMagnet;
     [SerializeField] private AnimationCurve staticRepulsionAcceleration;
     [SerializeField] private float dynamicObjectRepulsionForce = 200;
@@ -162,7 +164,11 @@ public class PlayerControllerV2 : MonoBehaviour
         jumpSoundSource.clip = jumpingSound;
         jumpSoundSource.loop = false;
         gunSoundSource.loop = true;
-        
+        gunSoundSource.clip = gunSound;
+        gunSoundSource.volume = 0;
+        gunSoundSource.Play();
+
+        StartCoroutine(nameof(ControlGunVolume));
     }
 
     // Update is called once per frame
@@ -172,26 +178,51 @@ public class PlayerControllerV2 : MonoBehaviour
         CheckForMagneticObject();
         AnimateGun();
         UpdateReticle();
-        PlayGunSound();
     }
-
-    private void PlayGunSound()
+    
+    private IEnumerator ControlGunVolume()
     {
-        if (!IsUsingGun || _isSticked)
+        while (true)
         {
-            gunSoundSource.Pause();
-        }
-        else if (IsAttracting)
-        {
-            gunSoundSource.clip = attractSound;
-            if(!gunSoundSource.isPlaying)
-                gunSoundSource.Play();
-        }
-        else if (IsRepelling)
-        {
-            gunSoundSource.clip = repulseSound;
-            if(!gunSoundSource.isPlaying)
-                gunSoundSource.Play();
+            if ((IsRepelling || IsAttracting) && !IsSticked)
+            {
+                //Set volume back to 100
+                if(gunSoundSource.volume < 100)
+                    gunSoundSource.volume += gunVolumeFadeRatio * Time.deltaTime;
+
+                //Set pitch
+                if (IsRepelling && gunSoundSource.pitch <= maxPitch)
+                {
+                    gunSoundSource.pitch += gunVolumeFadeRatio * Time.deltaTime;
+                }
+                if (IsAttracting && gunSoundSource.pitch >= minPitch)
+                {
+                    gunSoundSource.pitch -= gunVolumeFadeRatio * Time.deltaTime;
+                }
+            }
+            else
+            {
+                //Set Volume back to 0
+                if(gunSoundSource.volume > 0)
+                    gunSoundSource.volume -= gunVolumeFadeRatio * Time.deltaTime;
+                
+                //Set pitch to center point
+                if (gunSoundSource.pitch >=minPitch + ((maxPitch-minPitch)/2))
+                {
+                    gunSoundSource.pitch -= gunVolumeFadeRatio * Time.deltaTime;
+                }
+                if (gunSoundSource.pitch <=minPitch + ((maxPitch-minPitch)/2))
+                {
+                    gunSoundSource.pitch += gunVolumeFadeRatio * Time.deltaTime;
+                }
+            }
+
+            if (gunSoundSource.pitch < minPitch)
+                gunSoundSource.pitch = minPitch;
+            if (gunSoundSource.pitch > maxPitch)
+                gunSoundSource.pitch = maxPitch;
+            
+            yield return null;
         }
     }
 
@@ -435,6 +466,9 @@ public class PlayerControllerV2 : MonoBehaviour
             debugTextOutput.text = $"IsGrounded ={IsGrounded}\n" +
                                    $"IsGroundedOnMetal ={IsGroundedOnMetal}\n" +
                                    $"IsJumping ={_needJumping}\n" +
+                                   "\n" +
+                                   $"GunVolume = {gunSoundSource.volume}\n" +
+                                   $"GunPitch = {gunSoundSource.pitch}/{minPitch + ((maxPitch-minPitch)/2)}\n" +
                                    "\n" +
                                    $"IsUsingGun ={IsUsingGun}\n" +
                                    $"IsAttracting = {IsAttracting}\n" +
