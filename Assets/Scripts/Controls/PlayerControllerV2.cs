@@ -178,8 +178,8 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         _verticalAxis = Input.GetAxis("Vertical");
         _horizontalAxis = Input.GetAxis("Horizontal");
-        _isTryingToAttract = Input.GetMouseButton(0);
-        _isTryingToRepel = Input.GetMouseButton(1);
+        _isTryingToAttract = Input.GetMouseButton(0) && !Input.GetMouseButton(1);
+        _isTryingToRepel = Input.GetMouseButton(1) && !Input.GetMouseButton(0);
     
         if (Input.GetMouseButtonUp(0))
         {
@@ -273,7 +273,7 @@ public class PlayerControllerV2 : MonoBehaviour
         
         ShowDebug();
     }
-    
+
     private void UpdateInputDirection()
     {
         //Accelerations
@@ -317,10 +317,7 @@ public class PlayerControllerV2 : MonoBehaviour
             if (result == false)
                 result = hit.transform.TryGetComponent<MovingPlatform>(out _);
 
-            if (result)
-            {
-                ChangeParent(hit.transform.gameObject);
-            }
+            ChangeParent(result ? hit.transform.gameObject : null);
         }
     }
 

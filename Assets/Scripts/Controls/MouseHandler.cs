@@ -15,6 +15,9 @@ public class MouseHandler : MonoBehaviour
         _camera = GetComponentInChildren<Camera>();
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        _xRotation = transform.rotation.eulerAngles.x;
+        _yRotation = transform.rotation.eulerAngles.y;
     }
     
     // Update is called once per frame
