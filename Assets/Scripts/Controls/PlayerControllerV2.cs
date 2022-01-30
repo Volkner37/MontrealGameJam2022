@@ -221,7 +221,7 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         while (true)
         {
-            if ((IsRepelling || IsAttracting) && !IsSticked)
+            if ((IsRepelling || IsAttracting || _currentPickup != null) && !IsSticked)
             {
                 //Set volume back to 100
                 if(gunSoundSource.volume < 100)
