@@ -438,7 +438,7 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         int layerMask = ~LayerMask.GetMask("Player");
         RaycastHit hit;
-        bool grounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out hit, 1.1f, layerMask);
+        bool grounded = Physics.Raycast(transform.position, new Vector3(0, -1, 0), out hit, 1.3f, layerMask);
         
         //Check for moving platform
         if (grounded)
