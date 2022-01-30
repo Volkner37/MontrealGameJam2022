@@ -47,6 +47,8 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private float gunReplacePositionSpeed = 0.5f;
     [SerializeField] private Transform pickupPosition;
     [SerializeField] private GameObject magnet;
+    [SerializeField] private VisualEffect _gunVfx;
+    [SerializeField] private VisualEffect _ropeVfx;
     [Header("Attraction")]
     [SerializeField] private float attractionForceMagnet;
     [SerializeField] private AnimationCurve staticAttractionAcceleration;
@@ -124,22 +126,19 @@ public class PlayerControllerV2 : MonoBehaviour
                 magnet.transform.position = _currentTargetPosition;
                 magnet.transform.right = _currentTargetNormal;
                 magnet.transform.localScale = new Vector3(15, 15,15);
-                VisualEffect vfx = magnet.GetComponentInChildren<VisualEffect>();
-                vfx.SetVector3("Position", magnet.transform.position);
-                vfx.SetFloat("MaxDistance", _currentTargetDistance);
-                vfx.SetBool("ColorBool", true);
-                vfx.Play();
+                // _ropeVfx.SetVector3("Position", Vector3.zero);
+                // _ropeVfx.SetFloat("MaxDistance", 0.1f);
+                // _ropeVfx.SetBool("ColorBool", true);
+                // _ropeVfx.Play();
                 
-                vfx.transform.forward = (vfx.transform.position - transform.position).normalized;
+                //_ropeVfx.transform.forward = (_ropeVfx.transform.position - transform.position).normalized;
             }
 
             if (!value && _isSticked != false)
             {
-                //TODO : Slerp
                 magnet.transform.parent = gunModel.transform.GetChild(0);
                 magnet.transform.localScale = new Vector3(100, 100,100);
-                VisualEffect vfx = magnet.GetComponentInChildren<VisualEffect>();
-                vfx.Stop();
+                //_ropeVfx.Stop();
             }
 
             Debug.DrawRay(_gunVfx.transform.position, _gunVfx.transform.forward, Color.red);
@@ -172,12 +171,6 @@ public class PlayerControllerV2 : MonoBehaviour
     private GameObject _currentParent;
     #endregion
 
-    #region Effects
-    private VisualEffect _gunVfx;
-
-    #endregion
-
-
     private void Awake()
     {
         initialMagnetLocalPosition = magnet.transform.localPosition;
@@ -189,7 +182,6 @@ public class PlayerControllerV2 : MonoBehaviour
     {
         _camera = GetComponentInChildren<Camera>();
         _rigidbody = GetComponent<Rigidbody>();
-        _gunVfx = GetComponentInChildren<VisualEffect>();
         _gunVfx.enabled = true;
 
         //Sounds
@@ -412,10 +404,7 @@ public class PlayerControllerV2 : MonoBehaviour
         if (IsUsingGun)
         {
             UpdateMagnetGunEffect();
-            if(!IsSticked)
-                PlayVFX();
-            else
-                StopVFX();
+            PlayVFX();
         }
         else
         {
