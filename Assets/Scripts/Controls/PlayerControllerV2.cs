@@ -490,12 +490,17 @@ public class PlayerControllerV2 : MonoBehaviour
             {
                 ChangeParent(result ? hit.transform.gameObject : null);
             }
-            
+
             IsGroundedOnMetal = hit.transform.TryGetComponent<Magnetic>(out _);
         }
         else
         {
             IsGroundedOnMetal = false;
+            
+            if (!IsSticked)
+            {
+                ChangeParent(null);
+            }
         }
 
         IsGrounded = grounded;
