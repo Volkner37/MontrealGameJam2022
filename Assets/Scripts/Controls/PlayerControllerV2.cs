@@ -168,6 +168,19 @@ public class PlayerControllerV2 : MonoBehaviour
         StartCoroutine(nameof(ControlGunVolume));
     }
 
+    public void MuteAllSounds(bool mute)
+    {
+        Debug.Log("MuteAllSounds");
+        
+        foreach (AudioSource audioSource in GetComponents<AudioSource>())
+        {
+            if (mute)
+                audioSource.Pause();
+            else
+                audioSource.Play();
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {

@@ -1,10 +1,22 @@
+using System;
 using Assets.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     public static bool GameIsPaused = false;
-
+    
+    public class PauseEventArgs : EventArgs
+    {
+        public PauseEventArgs(bool isPaused)
+        { 
+            IsPaused = isPaused;
+        }
+            
+        public readonly bool IsPaused;
+    }
+    
+    
     public GameObject pauseMenuUI;
     
     void Update()
@@ -33,11 +45,13 @@ public class PauseMenu : MonoBehaviour
     }
     public void Resume()
     {
+        GetComponentInParent<PlayerControllerV2>().MuteAllSounds(false);
         Time.timeScale = 1f; 
         Disable(false);
     }
     public void Pause()
     {
+        GetComponentInParent<PlayerControllerV2>().MuteAllSounds(true);
         Time.timeScale = 0f;
         Disable(true);
         Debug.Log("pause");
