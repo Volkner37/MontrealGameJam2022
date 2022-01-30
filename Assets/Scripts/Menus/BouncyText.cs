@@ -12,7 +12,6 @@ public class BouncyText : MonoBehaviour
     
     private TextMeshProUGUI text;
     private float initialSize;
-    private float angle = 0;
     private bool isBouncing = false;
     
     // Start is called before the first frame update

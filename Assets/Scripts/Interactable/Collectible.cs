@@ -45,10 +45,10 @@ public class Collectible : MonoBehaviour
 
     private void OnTriggerEnter( Collider other )
     {
-        if( other.CompareTag("Player") )
+        if( other.CompareTag( "Player" ) )
         {
-            Debug.Log( "End of Level Scripting" );
-            DOTween.Clear();
+            StopAllCoroutines();
+            DOTween.KillAll();
             cheeseVisual.SetActive(false);
             GetComponent<Collider>().enabled = false;
             
