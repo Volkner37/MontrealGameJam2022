@@ -46,6 +46,7 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private Transform gunTipTransform;
     [SerializeField] private float gunReplacePositionSpeed = 0.5f;
     [SerializeField] private Transform pickupPosition;
+    [SerializeField] private GameObject magnet;
     [Header("Attraction")]
     [SerializeField] private float attractionForceMagnet;
     [SerializeField] private AnimationCurve staticAttractionAcceleration;
@@ -83,6 +84,8 @@ public class PlayerControllerV2 : MonoBehaviour
     #region Gun
     private bool _repelLocked = false; 
     private bool _attractLocked = false;
+    private Vector3 initialMagnetLocalPosition;
+    private Quaternion initialMagnetLocalRotation;
     private bool IsAttracting => _isTryingToAttract && IsLookingAtMagneticObject && _currentPickup == null;
     private bool IsRepelling => _isTryingToRepel && IsLookingAtMagneticObject && _currentPickup == null;
     private bool IsUsingGun => (IsRepelling || IsAttracting);
@@ -117,7 +120,32 @@ public class PlayerControllerV2 : MonoBehaviour
             if (value && _isSticked != true)
             {
                 impactSource.PlayOneShot(impactSound);
+                magnet.transform.parent = currentTarget.transform;
+                magnet.transform.position = _currentTargetPosition;
+                magnet.transform.right = _currentTargetNormal;
+                magnet.transform.localScale = new Vector3(15, 15,15);
+                VisualEffect vfx = magnet.GetComponentInChildren<VisualEffect>();
+                vfx.SetVector3("Position", magnet.transform.position);
+                vfx.SetFloat("MaxDistance", _currentTargetDistance);
+                vfx.SetBool("ColorBool", true);
+                vfx.Play();
+                
+                vfx.transform.forward = (vfx.transform.position - transform.position).normalized;
             }
+
+            if (!value && _isSticked != false)
+            {
+                //TODO : Slerp
+                magnet.transform.parent = gunModel.transform.GetChild(0);
+                magnet.transform.localScale = new Vector3(100, 100,100);
+                VisualEffect vfx = magnet.GetComponentInChildren<VisualEffect>();
+                vfx.Stop();
+            }
+
+            Debug.DrawRay(_gunVfx.transform.position, _gunVfx.transform.forward, Color.red);
+
+            //For magnet visibility in player camera
+            magnet.layer = value ? 0 : 6;
 
             _isSticked = value; 
         }
@@ -130,6 +158,7 @@ public class PlayerControllerV2 : MonoBehaviour
     private bool IsLookingAtMagneticObject => currentTarget != null;
     private float _currentTargetDistance;
     public Vector3 _currentTargetPosition = Vector3.zero;
+    public Vector3 _currentTargetNormal =  Vector3.zero;
     public Magnetic currentTarget = null;
     private GameObject _currentPickup = null;
 
@@ -147,6 +176,14 @@ public class PlayerControllerV2 : MonoBehaviour
     private VisualEffect _gunVfx;
 
     #endregion
+
+
+    private void Awake()
+    {
+        initialMagnetLocalPosition = magnet.transform.localPosition;
+        initialMagnetLocalRotation = magnet.transform.localRotation;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -154,7 +191,7 @@ public class PlayerControllerV2 : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _gunVfx = GetComponentInChildren<VisualEffect>();
         _gunVfx.enabled = true;
-        
+
         //Sounds
         walkingSoundSource.clip = walkingSound;
         walkingSoundSource.loop = true;
@@ -188,6 +225,12 @@ public class PlayerControllerV2 : MonoBehaviour
         CheckForMagneticObject();
         AnimateGun();
         UpdateReticle();
+
+        if (!IsSticked)
+        {
+            magnet.transform.localPosition = Vector3.Slerp(magnet.transform.localPosition, initialMagnetLocalPosition, 0.2f);
+            magnet.transform.localRotation = Quaternion.Slerp(magnet.transform.localRotation, initialMagnetLocalRotation, 0.2f);
+        }
     }
     
     private IEnumerator ControlGunVolume()
@@ -277,12 +320,14 @@ public class PlayerControllerV2 : MonoBehaviour
             {
                 _currentTargetPosition = hit.point;
                 _currentTargetDistance = hit.distance;
+                _currentTargetNormal = hit.normal;
                 return;
             }
             
             currentTarget = null;
             _currentTargetPosition = Vector3.zero;
             _currentTargetDistance = 0;
+            _currentTargetNormal = Vector3.zero;
         }
         
         currentTarget = null;
@@ -353,7 +398,7 @@ public class PlayerControllerV2 : MonoBehaviour
         UpdateInputDirection();
         UpdateStickStatus();
         UpdatePickupPosition();
-        SetGunLock();
+        //SetGunLock();
 
         //Check for jump
         if (_needJumping)
