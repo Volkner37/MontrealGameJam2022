@@ -8,6 +8,7 @@ public class BouncyText : MonoBehaviour
 {
     [SerializeField] private float bigSize;
     [SerializeField] private float timeScale;
+    [SerializeField] private bool forceBounceOnStart;
     
     private TextMeshProUGUI text;
     private float initialSize;
@@ -19,6 +20,12 @@ public class BouncyText : MonoBehaviour
     {
         text = GetComponent<TextMeshProUGUI>();
         initialSize = text.fontSize;
+
+        if( forceBounceOnStart )
+        {
+            isBouncing = true;
+            StartCoroutine( BounceAnimation() );
+        }
     }
 
     public void SetBounce( bool bounce )
