@@ -639,7 +639,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -340, y: -40}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1357068391
 MonoBehaviour:
@@ -709,16 +709,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slides:
-  - {fileID: 2800000, guid: 9cf998b31b34ba74a9575b027fc414f6, type: 3}
-  - {fileID: 2800000, guid: d8753dff23e8b754993c730f0df7028c, type: 3}
-  - {fileID: 2800000, guid: 0ec7047d977719e49ba797fdbcc17006, type: 3}
-  - {fileID: 2800000, guid: 04b949f310afd9a4099d5a81cb09633c, type: 3}
-  - {fileID: 2800000, guid: 52d934b10631c5d409787bac475d02d4, type: 3}
-  - {fileID: 2800000, guid: b6f22daf80de0654b99cfbb8cce2f2b6, type: 3}
-  - {fileID: 2800000, guid: 714a1786d78081b4c9fefd9421d83941, type: 3}
-  - {fileID: 2800000, guid: 41e0326869d7f3a4e84f8ae6918d181e, type: 3}
-  - {fileID: 2800000, guid: ca0e8d33a9b3cb84db456e377cdde073, type: 3}
-  - {fileID: 2800000, guid: 0a1b5835ec1516e4297728a4133f61cb, type: 3}
+  - {fileID: 2800000, guid: c58fee500f561d546bad6a4f55c4f253, type: 3}
+  - {fileID: 2800000, guid: 16b45082cd4021d4cab1d8a0b814dc96, type: 3}
+  - {fileID: 2800000, guid: e58739e133f13de4ba9fd7b96d82ff03, type: 3}
+  - {fileID: 2800000, guid: 800089dc78069b244af9091043928efe, type: 3}
+  - {fileID: 2800000, guid: 4e257b2c194746f45854c8ab4f123723, type: 3}
+  - {fileID: 2800000, guid: 4847114d7f5dbdd47be68d39fc014ca5, type: 3}
+  - {fileID: 2800000, guid: cb64a454799efc14493000e0b742dad0, type: 3}
+  - {fileID: 2800000, guid: ddb0684af17bc78429474482be7d942d, type: 3}
+  - {fileID: 2800000, guid: d85c3f7a3b0481c46bc490f2ab457eb8, type: 3}
+  - {fileID: 2800000, guid: 72380f55fb4cc6d439171304d19b890e, type: 3}
   _image: {fileID: 1357068391}
   rightArrow: {fileID: 153715941}
   leftArrow: {fileID: 842215562}
