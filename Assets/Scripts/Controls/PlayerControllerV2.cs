@@ -58,7 +58,7 @@ public class PlayerControllerV2 : MonoBehaviour
     [Header("Pickup")] 
     [SerializeField] private float pickupDistance = 2.0f;
     [Header("Reticle")] 
-    [SerializeField] private Image reticleImage;
+    [SerializeField] private RawImage reticleImage;
     [SerializeField] private Color noTargetColor;
     [SerializeField] private Gradient colorDistanceGradient;
 
