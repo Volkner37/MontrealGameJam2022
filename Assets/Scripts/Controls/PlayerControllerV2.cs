@@ -398,7 +398,7 @@ public class PlayerControllerV2 : MonoBehaviour
         UpdateInputDirection();
         UpdateStickStatus();
         UpdatePickupPosition();
-        //SetGunLock();
+        SetGunLock();
 
         //Check for jump
         if (_needJumping)
