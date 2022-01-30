@@ -25,6 +25,7 @@ public class MusicManager : MonoBehaviour
     {
         int index = SceneLoaderUtils.GetSceneIndex(e.Name);
         
+        
         int totalNumberOfScene = SceneManager.sceneCountInBuildSettings;
         int songIndex = index * musics.Count / totalNumberOfScene;
         
@@ -34,5 +35,6 @@ public class MusicManager : MonoBehaviour
         
         audioSource.clip = musics[songIndex];    
         audioSource.Play();
+        Debug.Log("play Music Main Music");
     }
 }
