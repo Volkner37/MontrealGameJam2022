@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,8 +13,6 @@ namespace Assets.Scripts.Utils
         
         public static void LoadScene(string sceneName)
         {
-            //SceneManager.LoadScene(sceneName);
-            Debug.Log(sceneName);
             LevelChanger _levelChanger = LevelChanger.Instance;
             OnSceneLoaded.Invoke(null, new SceneLoadEventArgs(sceneName));
             _levelChanger.FadeToLevel(sceneName);
@@ -47,7 +46,9 @@ namespace Assets.Scripts.Utils
 
             string computedName = values[0] + "_" + result;
 
-            return GetSceneIndex(computedName) < 0 ? "MainMenu" : computedName;
+            int index = GetSceneIndex(computedName);
+
+            return index == 1 ? "MainMenu" : computedName;
         }
 
         public static event EventHandler<SceneLoadEventArgs> OnSceneLoaded = delegate {  };
