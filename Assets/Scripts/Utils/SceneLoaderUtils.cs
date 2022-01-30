@@ -9,7 +9,7 @@ namespace Assets.Scripts.Utils
     {
         const int MaxLevelNumber = 0;
 
-        
+
         public static void LoadScene(string sceneName)
         {
             LevelChanger _levelChanger = LevelChanger.Instance;
