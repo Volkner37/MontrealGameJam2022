@@ -5,13 +5,15 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 public class SetVolume : MonoBehaviour
 {
+    public Slider _slider;
     public void Start()
     {
-        mixer.SetFloat("MainVolume", Mathf.Log10(GetComponent<Slider>().value) * 20);
+        _slider = GetComponent<Slider>();
+        _slider.SetValueWithoutNotify(AudioListener.volume);
     }
-    public AudioMixer mixer;
+    
     public void SetLevel(float sliderValue)
     {
-        mixer.SetFloat("MainVolume",Mathf.Log10(sliderValue)*20);
+        AudioListener.volume = sliderValue;
     }
 }

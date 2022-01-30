@@ -19,26 +19,39 @@ public class PauseMenu : MonoBehaviour
             }
         }
     }
+    private void Disable(bool enable)
+    {
+        GameIsPaused = enable;
+        GameObject player= GameObject.FindWithTag("Player");
+        player.GetComponent<MouseHandler>().enabled = !enable;
+        Cursor.visible = false;
+        pauseMenuUI.SetActive(enable);
+        if(enable)
+           Cursor.lockState = CursorLockMode.None;
+        else
+            Cursor.lockState = CursorLockMode.Locked;
+    }
     public void Resume()
     {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f;
-        GameIsPaused = false;
+        Time.timeScale = 1f; 
+        Disable(false);
     }
     public void Pause()
     {
-        pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
-        GameIsPaused = true;
+        Disable(true);
+        Debug.Log("pause");
     }
 
     public void QuitLevel()
     {
+        Time.timeScale = 1f; 
         SceneLoaderUtils.LoadScene("MainMenu");
     }
 
-        public void ResetLevel()
+    public void ResetLevel()
     {
+        Time.timeScale = 1f; 
         string name = SceneManager.GetActiveScene().name;
         SceneLoaderUtils.LoadScene(name);
     }
