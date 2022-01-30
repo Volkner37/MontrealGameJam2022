@@ -19,7 +19,10 @@ public class InteractableSFX : AbstractInteractable
             return;
 
         if (active)
-            _audioSource.Play();
+        {
+            if(!_audioSource.isPlaying)
+                _audioSource.Play();
+        }
         else
             _audioSource.Stop();
     }
