@@ -41,7 +41,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: f5bcdfcfb7fc8b34886cf49ac7f3d86c, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 3d8d86ef52f5bc6419a568bfa476d0e0, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -274,8 +274,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea8623911a5db764a8a81720de2849ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleSize: 1
-  timeScale: 3
+  bigSize: 35
+  timeScale: 5
 --- !u!1 &6249699819991426088
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,10 +377,10 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
+    m_NormalColor: {r: 0.24056602, g: 0.39061797, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 0, b: 0.07093382, a: 1}
     m_PressedColor: {r: 1, g: 0.70294654, b: 0.6462264, a: 1}
-    m_SelectedColor: {r: 0, g: 0, b: 0, a: 1}
+    m_SelectedColor: {r: 0.2392157, g: 0.3921569, b: 1, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.3
@@ -453,6 +453,34 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 6249699819793622886}
+          m_TargetAssemblyTypeName: BouncyText, Assembly-CSharp
+          m_MethodName: SetBounce
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 6249699819793622886}
+          m_TargetAssemblyTypeName: BouncyText, Assembly-CSharp
+          m_MethodName: SetBounce
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &6591123979256420666
 GameObject:
   m_ObjectHideFlags: 0
@@ -494,7 +522,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: e7ba27a4d77d17545bc95aecd5dc0f14, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7c08b9f799a4f7541830ef0748dc2aa4, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

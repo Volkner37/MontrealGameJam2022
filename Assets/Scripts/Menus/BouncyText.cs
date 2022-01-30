@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using DG.Tweening;
 
 public class BouncyText : MonoBehaviour
 {
-    [SerializeField] private float scaleSize;
+    [SerializeField] private float bigSize;
     [SerializeField] private float timeScale;
     
     private TextMeshProUGUI text;
     private float initialSize;
     private float angle = 0;
+    private bool isBouncing = false;
     
     // Start is called before the first frame update
     void Start()
@@ -19,13 +21,31 @@ public class BouncyText : MonoBehaviour
         initialSize = text.fontSize;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetBounce( bool bounce )
     {
-        text.fontSize = Mathf.Sin(angle) * scaleSize + initialSize;
+        if( DOTween.TotalActiveTweens() >= 0 )
+        {
+            DOTween.KillAll();
+        }
 
-        angle += Time.deltaTime * timeScale;
-        if (angle >= 360)
-            angle = 0;
+        isBouncing = bounce;
+
+        if( !isBouncing )
+        {
+            text.fontSize = initialSize;
+            StopAllCoroutines();
+        }
+        else 
+        {
+            StartCoroutine( BounceAnimation() );
+        }
+    }
+
+    private IEnumerator BounceAnimation()
+    {
+        yield return DOTween.To( x => text.fontSize = x, text.fontSize, bigSize, timeScale ).SetEase( Ease.InOutSine ).SetSpeedBased().WaitForCompletion();
+        yield return DOTween.To( x => text.fontSize = x, text.fontSize, initialSize, timeScale ).SetEase( Ease.InOutSine ).SetSpeedBased().WaitForCompletion();
+
+        StartCoroutine( BounceAnimation() );
     }
 }
