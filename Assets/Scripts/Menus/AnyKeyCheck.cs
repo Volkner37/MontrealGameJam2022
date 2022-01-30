@@ -9,7 +9,19 @@ public class AnyKeyCheck : MonoBehaviour
     private void Awake()
     {
         Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.Confined;    
+        Cursor.lockState = CursorLockMode.Confined;
+
+        //We want to skip the splashscreen if we come back to main menu
+        if (!GameObject.Find("MusicManager"))
+        {
+            GameObject manager = Instantiate((GameObject) Resources.Load("Prefabs/MusicManager"));
+            manager.name = "MusicManager";
+        }
+        else
+        {
+            mainMenu.SetActive(true);
+            gameObject.SetActive(false);
+        }
     }
     
     // Update is called once per frame
