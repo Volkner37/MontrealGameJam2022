@@ -631,7 +631,15 @@ public class PlayerControllerV2 : MonoBehaviour
                 if (currentTarget.IsStatic)
                 {
                     if(_currentTargetDistance <= minimumDistanceToStick)
-                        IsSticked = IsAttracting;    
+                        IsSticked = IsAttracting;
+
+                    if (IsSticked)
+                    {
+                        if (other.gameObject != _currentParent)
+                        {
+                            ChangeParent(other.gameObject);
+                        }
+                    }
                 }
                 else
                 {
