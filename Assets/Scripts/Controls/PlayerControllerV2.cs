@@ -485,13 +485,12 @@ public class PlayerControllerV2 : MonoBehaviour
             bool result = (hit.transform.parent != null && hit.transform.GetComponentInParent<MovingPlatform>() != null);
             if (result == false)
                 result = hit.transform.TryGetComponent<MovingPlatform>(out _);
-
-
-            GameObject currentParent = null;
-            if(transform.parent != null)
-                 currentParent = transform.parent.gameObject;
             
-            ChangeParent(result ? hit.transform.gameObject : currentParent);
+            if (!IsSticked)
+            {
+                ChangeParent(result ? hit.transform.gameObject : null);
+            }
+            
             IsGroundedOnMetal = hit.transform.TryGetComponent<Magnetic>(out _);
         }
         else
