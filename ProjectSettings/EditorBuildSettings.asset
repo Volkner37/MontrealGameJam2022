@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/FINAL/MainMenu.unity
     guid: 361b10c73553405438809aa5a668e591
   - enabled: 1
+    path: Assets/Scenes/FINAL/Cinematic.unity
+    guid: d3cd533f19f85ff47a3fd60755ee6043
+  - enabled: 1
     path: Assets/Scenes/FINAL/Levels/Level_00.unity
     guid: 74de66417e15abd4fa350630a40d2eec
   - enabled: 1
@@ -29,22 +32,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FINAL/Levels/Level_06.unity
     guid: 994246672b435474290195107fbfc128
-  - enabled: 0
-    path: Assets/Scenes/FINAL/Levels/Level_07.unity
-    guid: fdad0adcfe5ec3245a1bc886f2742297
-  - enabled: 0
-    path: Assets/Scenes/FINAL/Levels/Level_08.unity
-    guid: 141327430da197b49b599d479b18bfb4
-  - enabled: 0
-    path: Assets/Scenes/FINAL/Levels/Level_09.unity
-    guid: 75851ef639838f14483ec45fc6d79d77
-  - enabled: 0
-    path: Assets/Scenes/FINAL/Levels/Level_10.unity
-    guid: d7d285e29847d514aae89b3b522685b3
-  - enabled: 0
-    path: Assets/Scenes/FINAL/Levels/Level_11.unity
-    guid: 130b335c3e6032147ad029cc94cee9fa
-  - enabled: 0
-    path: Assets/Scenes/FINAL/Levels/Level_12.unity
-    guid: 72a6b92e2b48f9c4990759fb017333ab
   m_configObjects: {}
