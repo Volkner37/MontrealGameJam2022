@@ -3127,6 +3127,10 @@ PrefabInstance:
       propertyPath: m_Texture
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7793974993046084660, guid: 98e199c9b7bd8f54aa2ed4248afc2670, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 7825107483814345402, guid: 98e199c9b7bd8f54aa2ed4248afc2670, type: 3}
       propertyPath: m_CullTransparentMesh
       value: 0
