@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelChanger : MonoBehaviour
 {
-    private string levelToLoad;
+    private static string levelToLoad;
     private static LevelChanger _instance;
 
     public static LevelChanger Instance { get { return _instance; } }
