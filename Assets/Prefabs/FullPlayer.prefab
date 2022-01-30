@@ -416,8 +416,8 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 64a6fdbefbc61e74eab0432cf1dadc77, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.2
-  m_Height: 2
+  m_Radius: 0.5
+  m_Height: 1.9
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1528296966966347520
@@ -492,7 +492,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  dynamicObjectAttractionForce: 200
+  dynamicObjectAttractionForce: 100
   minimumDistanceToStick: 1.05
   repulsionForceMagnet: 5
   staticRepulsionAcceleration:
@@ -519,7 +519,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  dynamicObjectRepulsionForce: 200
+  dynamicObjectRepulsionForce: 100
   pickupDistance: 2
   reticleImage: {fileID: 95187396}
   noTargetColor: {r: 1, g: 1, b: 1, a: 0.57254905}
@@ -2512,7 +2512,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6668671349039712101}
   m_LocalRotation: {x: 0.000000006519258, y: -0.00000017881393, z: 0.0000000121071935, w: 1}
-  m_LocalPosition: {x: -7.799998, y: 0.13000207, z: -1.7000008}
+  m_LocalPosition: {x: -7.8, y: -0.31, z: -2.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4311680116798960949}

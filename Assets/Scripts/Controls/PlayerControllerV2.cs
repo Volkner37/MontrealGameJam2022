@@ -83,8 +83,8 @@ public class PlayerControllerV2 : MonoBehaviour
     #region Gun
     private bool _repelLocked = false; 
     private bool _attractLocked = false;
-    private bool IsAttracting => _isTryingToAttract && IsLookingAtMagneticObject && CurrentPickup == null;
-    private bool IsRepelling => _isTryingToRepel && IsLookingAtMagneticObject && CurrentPickup == null;
+    private bool IsAttracting => _isTryingToAttract && IsLookingAtMagneticObject && _currentPickup == null;
+    private bool IsRepelling => _isTryingToRepel && IsLookingAtMagneticObject && _currentPickup == null;
     private bool IsUsingGun => (IsRepelling || IsAttracting);
     #endregion
     
@@ -131,7 +131,7 @@ public class PlayerControllerV2 : MonoBehaviour
     private float _currentTargetDistance;
     public Vector3 _currentTargetPosition = Vector3.zero;
     public Magnetic currentTarget = null;
-    public GameObject CurrentPickup => pickupPosition.childCount == 0 ? null : pickupPosition.GetChild(0)?.gameObject;
+    private GameObject _currentPickup = null;
 
     
 
@@ -233,10 +233,10 @@ public class PlayerControllerV2 : MonoBehaviour
 
     private void UpdatePickupPosition()
     {
-        if (CurrentPickup == null) return;
+        if (_currentPickup == null) return;
         
-        Vector3 direction = pickupPosition.position - CurrentPickup.transform.position;
-        CurrentPickup.GetComponent<Rigidbody>().AddForce(direction * 30, ForceMode.Force);
+        Vector3 direction = pickupPosition.position - _currentPickup.transform.position;
+        _currentPickup.GetComponent<Rigidbody>().AddForce(direction * 200, ForceMode.Force);
     }
 
     private void AnimateGun()
@@ -301,7 +301,7 @@ public class PlayerControllerV2 : MonoBehaviour
         bool pickedUpSomething = false;
         if (Input.GetKeyDown(KeyCode.E) || _isTryingToAttract)
         {
-            if (_currentTargetDistance <= pickupDistance && currentTarget != null && !currentTarget.IsStatic && pickupPosition.childCount == 0)
+            if (_currentTargetDistance <= pickupDistance && currentTarget != null && !currentTarget.IsStatic && _currentPickup == null)
             {
                 pickedUpSomething = true;
                 PickUp();
@@ -316,18 +316,20 @@ public class PlayerControllerV2 : MonoBehaviour
 
     private void Drop()
     {
-        if (pickupPosition.childCount <= 0) return;
+        if (_currentPickup == null) return;
         
-        Rigidbody objRigidBody = pickupPosition.GetChild(0).GetComponent<Rigidbody>();
+        Rigidbody objRigidBody = _currentPickup.GetComponent<Rigidbody>();
         objRigidBody.useGravity = true;
         objRigidBody.drag = 0;
-        pickupPosition.transform.DetachChildren();
+        _currentPickup = null;
     }
 
     private void PickUp()
     {
-        currentTarget.transform.SetParent(pickupPosition);
-        Rigidbody objRigidBody = pickupPosition.GetChild(0).GetComponent<Rigidbody>();
+        if (_currentPickup != null) return;
+        
+        _currentPickup = currentTarget.gameObject;
+        Rigidbody objRigidBody = _currentPickup.GetComponent<Rigidbody>();
         objRigidBody.useGravity = false;    
         objRigidBody.drag = 15;
     }
@@ -489,7 +491,7 @@ public class PlayerControllerV2 : MonoBehaviour
                                    //$"RepelLock{ _repelLocked}\n" +
                                    $"CurrentTarget = {currentTarget?.name ?? "None"}\n" +
                                    $"Target Distance = {_currentTargetDistance}\n" +
-                                   $"Pickup = {CurrentPickup?.name ?? "None"}\n" +
+                                   $"Pickup = {_currentPickup?.name ?? "None"}\n" +
                                    "\n"+
                                    //$"IsLookingAtObject = {_isLookingAtMagneticObject}\n+" +
                                    "\n"+
