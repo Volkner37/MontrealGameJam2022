@@ -48,7 +48,6 @@ public class PlayerControllerV2 : MonoBehaviour
     [SerializeField] private Transform pickupPosition;
     [SerializeField] private GameObject magnet;
     [SerializeField] private VisualEffect _gunVfx;
-    [SerializeField] private VisualEffect _ropeVfx;
     [Header("Attraction")]
     [SerializeField] private float attractionForceMagnet;
     [SerializeField] private AnimationCurve staticAttractionAcceleration;
@@ -126,19 +125,12 @@ public class PlayerControllerV2 : MonoBehaviour
                 magnet.transform.position = _currentTargetPosition;
                 magnet.transform.right = _currentTargetNormal;
                 magnet.transform.localScale = new Vector3(15, 15,15);
-                // _ropeVfx.SetVector3("Position", Vector3.zero);
-                // _ropeVfx.SetFloat("MaxDistance", 0.1f);
-                // _ropeVfx.SetBool("ColorBool", true);
-                // _ropeVfx.Play();
-                
-                //_ropeVfx.transform.forward = (_ropeVfx.transform.position - transform.position).normalized;
             }
 
             if (!value && _isSticked != false)
             {
                 magnet.transform.parent = gunModel.transform.GetChild(0);
                 magnet.transform.localScale = new Vector3(100, 100,100);
-                //_ropeVfx.Stop();
             }
 
             Debug.DrawRay(_gunVfx.transform.position, _gunVfx.transform.forward, Color.red);
