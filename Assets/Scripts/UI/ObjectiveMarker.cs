@@ -7,7 +7,7 @@ using DG.Tweening;
 
 public class ObjectiveMarker : MonoBehaviour
 {
-    [SerializeField] private Image m_objectiveMarker;
+    [SerializeField] private RawImage m_objectiveMarker;
     private Transform m_objective;
     private TextMeshProUGUI m_distanceDisplay;
     private Canvas m_canvas;
