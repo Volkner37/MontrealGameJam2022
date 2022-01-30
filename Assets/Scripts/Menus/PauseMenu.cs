@@ -38,10 +38,17 @@ public class PauseMenu : MonoBehaviour
         player.GetComponent<MouseHandler>().enabled = !enable;
         Cursor.visible = false;
         pauseMenuUI.SetActive(enable);
-        if(enable)
-           Cursor.lockState = CursorLockMode.None;
+        if (enable)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
         else
+        {
+            Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
+        }
+
     }
     public void Resume()
     {
